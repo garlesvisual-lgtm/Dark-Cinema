@@ -24,7 +24,7 @@ jobs:
 
       - name: Crear estructura de Android y dependencias
         run: |
-          flutter create . --platforms=android --org com.darkcinema.app
+          flutter create . --platforms=android --project-name=dark_cinema --org com.darkcinema.app
           flutter pub get
 
       - name: Construir APK de pruebas
