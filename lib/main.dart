@@ -22,83 +22,7 @@ class DarkCinemaEcosystemApp extends StatelessWidget {
         ),
         fontFamily: 'SansSerif',
       ),
-      home: const CinematicTeaserScreen(),
-    );
-  }
-}
-
-class CinematicTeaserScreen extends StatelessWidget {
-  const CinematicTeaserScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF0B0B0E), Color(0xFF14141A), Color(0xFF0B0B0E)],
-          ),
-        ),
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.movie_creation, size: 80, color: Color(0xFF3B82F6)),
-            const SizedBox(height: 24),
-            const Text(
-              'DARK CINEMA',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: 5.0, color: Colors.white),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'El futuro del cine y la IA en tus manos',
-              style: TextStyle(fontSize: 13, color: Colors.grey, letterSpacing: 1.2),
-            ),
-            const SizedBox(height: 40),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(0xFF14141A),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.4)),
-              ),
-              child: const Column(
-                children: [
-                  Text(
-                    '🎬 Seguridad y Acceso Biométrico:',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white70),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    '• Registro obligatorio por Correo Electrónico\n• Autenticación biométrica por Escaneo de Iris\n• Control de cuentas y licencias Pro / VIP',
-                    style: TextStyle(fontSize: 12, color: Colors.grey, height: 1.5),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 40),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF3B82F6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                ),
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AccountRegistrationScreen()),
-                  );
-                },
-                child: const Text('Crear Cuenta / Registrarse', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
-              ),
-            ),
-          ],
-        ),
-      ),
+      home: const AccountRegistrationScreen(),
     );
   }
 }
@@ -117,7 +41,6 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
   bool _irisScanned = false;
 
   void _performIrisScan() {
-    // Simula el escaneo de iris del dispositivo
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -175,7 +98,6 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
       return;
     }
 
-    // Validación de códigos VIP / Creador
     bool isSuperAdmin = false;
     DateTime expirationDate = DateTime(2026, 10, 26);
     bool isExpired = DateTime.now().isAfter(expirationDate);
@@ -217,24 +139,24 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: const EdgeInsets.all(28.0),
         child: Center(
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.fingerprint, size: 64, color: Color(0xFF3B82F6)),
-                const SizedBox(height: 16),
+                const Icon(Icons.movie_creation, size: 60, color: Color(0xFF3B82F6)),
+                const SizedBox(height: 12),
                 const Text(
-                  'REGISTRO DARK CINEMA',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 2.0, color: Colors.white),
+                  'DARK CINEMA',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 3.0, color: Colors.white),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 const Text(
-                  'Crea tu cuenta con correo y seguridad biométrica',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  'Estudio IA con Regalías Justas y Biometría',
+                  style: TextStyle(fontSize: 11, color: Colors.grey),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -245,7 +167,7 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 TextField(
                   controller: _passwordController,
                   obscureText: true,
@@ -257,10 +179,10 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
                 SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 48,
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: _irisScanned ? Colors.green : const Color(0xFF3B82F6)),
@@ -275,14 +197,14 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
                     label: Text(
                       _irisScanned ? 'Iris Verificado (Biometría OK)' : 'Escanear Iris (Requerido)',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         color: _irisScanned ? Colors.green : Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
                 TextField(
                   controller: _codeController,
                   decoration: InputDecoration(
@@ -293,24 +215,24 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 18),
                 SizedBox(
                   width: double.infinity,
-                  height: 52,
+                  height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF3B82F6),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
                     onPressed: () => _registerAccount(context),
-                    child: const Text('Finalizar Registro e Ingresar', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    child: const Text('Finalizar Registro e Ingresar', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                   ),
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Sistema de autenticación por correo e iris protegido por Dark Cinema.',
+                  'Derechos Reservados © 2026 Adolfo García García. Los contenidos generados otorgan un esquema de regalías pasivas justas del 2% por derechos de motor de IA para el Fundador en plataformas externas (YouTube/Redes). Prohibido su plagio.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 9, color: Colors.grey),
+                  style: TextStyle(fontSize: 8.5, color: Colors.grey, height: 1.3),
                 ),
               ],
             ),
@@ -335,7 +257,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   void consumeFreeVideo(BuildContext context) {
     if (widget.isSuperAdmin) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('[Admin] Video generado con licencia maestra ilimitada.')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('[Admin] Video generado con licencia maestra y regalías pasivas activas.')));
       return;
     }
 
@@ -402,7 +324,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 }
 
-class StudioHomeTab extends StatelessWidget {
+class StudioHomeTab extends StatefulWidget {
   final bool isSuperAdmin;
   final int freeVideosLeft;
   final VoidCallback onGenerate;
@@ -410,10 +332,91 @@ class StudioHomeTab extends StatelessWidget {
   const StudioHomeTab({super.key, required this.isSuperAdmin, required this.freeVideosLeft, required this.onGenerate});
 
   @override
+  State<StudioHomeTab> createState() => _StudioHomeTabState();
+}
+
+class _StudioHomeTabState extends State<StudioHomeTab> {
+  final TextEditingController _geminiPromptController = TextEditingController();
+  bool _isGeneratingByGemini = false;
+
+  void _openGeminiCommandDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: const Color(0xFF14141A),
+          title: const Row(
+            children: [
+              Icon(Icons.smart_toy, color: Color(0xFF3B82F6)),
+              SizedBox(width: 10),
+              Text('Asistente Gemini Studio', style: TextStyle(color: Colors.white, fontSize: 16)),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Describe el concepto del video que deseas que Gemini cree para ti (estilo, iluminación, escena):',
+                style: TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _geminiPromptController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: 'Ej. Toma cinematográfica en playa con neón...',
+                  filled: true,
+                  fillColor: const Color(0xFF0B0B0E),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                ),
+              ),
+              if (_isGeneratingByGemini) ...[
+                const SizedBox(height: 16),
+                const LinearProgressIndicator(color: Color(0xFF3B82F6)),
+                const SizedBox(height: 8),
+                const Text('Gemini procesando y renderizando el video...', style: TextStyle(color: Color(0xFF3B82F6), fontSize: 11)),
+              ]
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
+              onPressed: _isGeneratingByGemini ? null : () async {
+                if (_geminiPromptController.text.trim().isEmpty) return;
+                setDialogState(() {
+                  _isGeneratingByGemini = true;
+                });
+                
+                // Simula el tiempo de procesamiento y renderizado de la IA de Gemini
+                await Future.delayed(const Duration(seconds: 3));
+
+                setDialogState(() {
+                  _isGeneratingByGemini = false;
+                });
+                Navigator.pop(context);
+
+                widget.onGenerate();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('¡Video conceptual generado con éxito por Gemini Studio!')),
+                );
+              },
+              child: const Text('Ejecutar Comando'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(isSuperAdmin ? 'DARK CINEMA [FOUNDER ADMIN]' : 'DARK CINEMA STUDIO', style: const TextStyle(fontSize: 12, letterSpacing: 1.2)),
+        title: Text(widget.isSuperAdmin ? 'DARK CINEMA [FOUNDER ADMIN]' : 'DARK CINEMA STUDIO', style: const TextStyle(fontSize: 12, letterSpacing: 1.2)),
         backgroundColor: const Color(0xFF14141A),
       ),
       body: Padding(
@@ -432,7 +435,7 @@ class StudioHomeTab extends StatelessWidget {
                 children: [
                   const Text('Créditos del ciclo (15 días):', style: TextStyle(fontSize: 12, color: Colors.grey)),
                   Text(
-                    isSuperAdmin ? 'Ilimitados (Admin)' : '$freeVideosLeft / 3 disponibles',
+                    widget.isSuperAdmin ? 'Ilimitados (Admin)' : '${widget.freeVideosLeft} / 3 disponibles',
                     style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF3B82F6)),
                   ),
                 ],
@@ -464,7 +467,7 @@ class StudioHomeTab extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6), padding: const EdgeInsets.all(16)),
-                    onPressed: onGenerate,
+                    onPressed: widget.onGenerate,
                     icon: const Icon(Icons.bolt),
                     label: const Text('Generar Video IA'),
                   ),
@@ -473,9 +476,7 @@ class StudioHomeTab extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(padding: const EdgeInsets.all(16)),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Asistente Gemini escuchando comandos...')));
-                    },
+                    onPressed: () => _openGeminiCommandDialog(context),
                     icon: const Icon(Icons.smart_toy, color: Color(0xFF3B82F6)),
                     label: const Text('Comando Gemini'),
                   ),
