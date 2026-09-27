@@ -1,37 +1,12 @@
-name: Compilar APK Android
+steps:
+  - uses: actions/checkout@v4
+  - uses: subosito/flutter-action@v2
+    with:
+      flutter-version: '3.19.0'
+  
+  # AGREGA ESTE PASO AQUÍ:
+  - name: Get Dependencies
+    run: flutter pub get
 
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Configurar Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Configurar Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.19.0'
-          cache: true
-
-      - name: Crear estructura de Android y dependencias
-        run: |
-          flutter create . --platforms=android --project-name=dark_cinema --org com.darkcinema.app
-          flutter pub get
-
-      - name: Construir APK de pruebas
-        run: flutter build apk --release
-
-      - name: Subir APK generado
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+  - name: Build APK Release
+    run: flutter build apk --release
