@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:video_player/video_player.dart';
 
 void main() {
   runApp(const DarkCinemaEcosystemApp());
@@ -14,21 +13,20 @@ class DarkCinemaEcosystemApp extends StatelessWidget {
     return MaterialApp(
       title: 'Dark Cinema - Ultimate Global AI Ecosystem',
       debugShowCheckedModeBanner: false,
-      // Configuración automática del idioma por defecto según el país del dispositivo
       localeResolutionCallback: (locale, supportedLocales) {
         for (var supportedLocale in supportedLocales) {
           if (supportedLocale.languageCode == locale?.languageCode) {
             return supportedLocale;
           }
         }
-        return supportedLocales.first; // Predeterminado a Español / Global
+        return supportedLocales.first;
       },
       supportedLocales: const [
-        Locale('es', 'MX'), // Español por defecto
-        Locale('en', 'US'), // Inglés global
-        Locale('fr', 'FR'), // Francés
-        Locale('pt', 'BR'), // Portugués
-        Locale('ja', 'JP'), // Japonés
+        Locale('es', 'MX'),
+        Locale('en', 'US'),
+        Locale('fr', 'FR'),
+        Locale('pt', 'BR'),
+        Locale('ja', 'JP'),
       ],
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -50,36 +48,8 @@ class DarkCinemaEcosystemApp extends StatelessWidget {
   }
 }
 
-class CinematicTeaserScreen extends StatefulWidget {
+class CinematicTeaserScreen extends StatelessWidget {
   const CinematicTeaserScreen({super.key});
-
-  @override
-  State<CinematicTeaserScreen> createState() => _CinematicTeaserScreenState();
-}
-
-class _CinematicTeaserScreenState extends State<CinematicTeaserScreen> {
-  late VideoPlayerController _controller;
-  bool _isVideoInitialized = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.networkUrl(
-      Uri.parse('https://flutter.github.io/assets-for-video-assets/bee.mp4'),
-    )..initialize().then((_) {
-        setState(() {
-          _isVideoInitialized = true;
-        });
-        _controller.setLooping(true);
-        _controller.play();
-      });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,19 +66,19 @@ class _CinematicTeaserScreenState extends State<CinematicTeaserScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.movie_filter, size: 70, color: Color(0xFF3B82F6)),
+            const Icon(Icons.movie_filter, size: 60, color: Color(0xFF3B82F6)),
             const SizedBox(height: 10),
             const Text(
               'DARK CINEMA',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 4.0, color: Colors.white),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 4.0, color: Colors.white),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             const Text(
-              'Ecosistema Global • Multilenguaje Automático & Regalías del Fundador',
+              'Ecosistema Global • Motor Ultra 4K/8D & Regalías del Fundador',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 11, color: Colors.grey),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -116,38 +86,29 @@ class _CinematicTeaserScreenState extends State<CinematicTeaserScreen> {
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.4)),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: _isVideoInitialized
-                      ? Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: _controller.value.aspectRatio,
-                              child: VideoPlayer(_controller),
-                            ),
-                            Container(color: Colors.black26),
-                            const Positioned(
-                              bottom: 16,
-                              child: Text(
-                                'Cortometraje Global (Ultra 4K Adaptativo)',
-                                style: TextStyle(color: Colors.white, fontSize: 12, backgroundColor: Colors.black54),
-                              ),
-                            )
-                          ],
-                        )
-                      : const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6))),
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.play_circle_filled, size: 56, color: Color(0xFF3B82F6)),
+                      SizedBox(height: 10),
+                      Text(
+                        'Cortometraje de Bienvenida 4K [Activo]',
+                        style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 20),
             SizedBox(
-              width: double.infinity,
-              height: 50,
+              width: 220,
+              height: 44,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF3B82F6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: () {
                   Navigator.pushReplacement(
@@ -155,7 +116,7 @@ class _CinematicTeaserScreenState extends State<CinematicTeaserScreen> {
                     MaterialPageRoute(builder: (context) => const AccountRegistrationScreen()),
                   );
                 },
-                child: const Text('Entrar al Ecosistema Global', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                child: const Text('Entrar al Ecosistema', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -187,12 +148,12 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
           children: [
             Icon(Icons.remove_red_eye, color: Color(0xFF3B82F6)),
             SizedBox(width: 10),
-            Text('Escáner Biométrico de Iris', style: TextStyle(color: Colors.white, fontSize: 16)),
+            Text('Escáner Biométrico de Iris', style: TextStyle(color: Colors.white, fontSize: 15)),
           ],
         ),
         content: const Text(
-          'Alineando sensor frontal para reconocimiento biométrico y validación de seguridad global...',
-          style: TextStyle(color: Colors.grey),
+          'Alineando sensor frontal para reconocimiento biométrico y validación de seguridad...',
+          style: TextStyle(color: Colors.grey, fontSize: 12),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
@@ -207,7 +168,7 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
                 const SnackBar(content: Text('¡Iris escaneado y verificado con éxito!')),
               );
             },
-            child: const Text('Confirmar Escaneo'),
+            child: const Text('Confirmar'),
           ),
         ],
       ),
@@ -221,7 +182,7 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, ingresa tu correo y contraseña.')),
+        const SnackBar(content: Text('Ingresa tu correo y contraseña.')),
       );
       return;
     }
@@ -266,24 +227,19 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(28.0),
+        padding: const EdgeInsets.all(24.0),
         child: Center(
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.movie_creation, size: 60, color: Color(0xFF3B82F6)),
-                const SizedBox(height: 12),
+                const Icon(Icons.movie_creation, size: 50, color: Color(0xFF3B82F6)),
+                const SizedBox(height: 10),
                 const Text(
                   'DARK CINEMA',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 3.0, color: Colors.white),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 3.0, color: Colors.white),
                 ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Detección Regional Automática & Seguridad',
-                  style: TextStyle(fontSize: 11, color: Colors.grey),
-                ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
                 TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -291,7 +247,7 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
                     prefixIcon: const Icon(Icons.email, color: Color(0xFF3B82F6)),
                     filled: true,
                     fillColor: const Color(0xFF14141A),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -303,63 +259,60 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
                     prefixIcon: const Icon(Icons.lock, color: Color(0xFF3B82F6)),
                     filled: true,
                     fillColor: const Color(0xFF14141A),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                   ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
-                  height: 48,
+                  height: 42,
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: _irisScanned ? Colors.green : const Color(0xFF3B82F6)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       backgroundColor: _irisScanned ? Colors.green.withOpacity(0.1) : Colors.transparent,
                     ),
                     onPressed: _performIrisScan,
                     icon: Icon(
                       _irisScanned ? Icons.check_circle : Icons.remove_red_eye,
                       color: _irisScanned ? Colors.green : const Color(0xFF3B82F6),
+                      size: 18,
                     ),
                     label: Text(
                       _irisScanned ? 'Iris Verificado OK' : 'Escanear Iris (Requerido)',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: _irisScanned ? Colors.green : Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontSize: 12, color: _irisScanned ? Colors.green : Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
                 TextField(
                   controller: _codeController,
                   decoration: InputDecoration(
-                    hintText: 'Código de Acceso (Fundador / VIP / Youtuber)',
+                    hintText: 'Código de Acceso (Fundador / VIP / Creador)',
                     prefixIcon: const Icon(Icons.card_giftcard, color: Colors.amber),
                     filled: true,
                     fillColor: const Color(0xFF14141A),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
-                  ),
-                ),
-                const SizedBox(height: 18),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3B82F6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    onPressed: () => _registerAccount(context),
-                    child: const Text('Entrar al Ecosistema', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                   ),
                 ),
                 const SizedBox(height: 16),
+                SizedBox(
+                  width: 200,
+                  height: 44,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3B82F6),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: () => _registerAccount(context),
+                    child: const Text('Entrar', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                const SizedBox(height: 14),
                 const Text(
-                  'Derechos Reservados © 2026 Adolfo García García. Los contenidos generan un esquema de regalías pasivas justas del 2% para el Fundador. Prohibido su plagio.',
+                  '© 2026 Adolfo García García. Regalías pasivas justas del 2% para el Fundador.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 8.5, color: Colors.grey, height: 1.3),
+                  style: TextStyle(fontSize: 8, color: Colors.grey),
                 ),
               ],
             ),
@@ -409,8 +362,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         backgroundColor: const Color(0xFF14141A),
         title: const Text('Límite de Videos Alcanzado', style: TextStyle(color: Colors.white)),
         content: const Text(
-          'Suscríbete a Creator Pro por \$199 MXN al mes (conversión automática a tu moneda local) para desbloquear creaciones ilimitadas, los 50 filtros profesionales y soporte de IA avanzado.',
-          style: TextStyle(color: Colors.grey),
+          'Suscríbete a Creator Pro por \$199 MXN al mes para desbloquear creaciones ilimitadas, los 50 filtros profesionales y estudio de audio 8D.',
+          style: TextStyle(color: Colors.grey, fontSize: 12),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cerrar')),
@@ -434,7 +387,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final List<Widget> screens = [
       StudioHomeTab(isSuperAdmin: widget.isSuperAdmin, freeVideosLeft: freeVideosLeft, onGenerate: () => consumeFreeVideo(context)),
       ProFiltersTab(isSuperAdmin: widget.isSuperAdmin),
-      AudioStudioTab(isSuperAdmin: widget.isSuperAdmin),
+      const AudioMusicStudioScreen(),
       SubscriptionCheckoutTab(isSuperAdmin: widget.isSuperAdmin),
     ];
 
@@ -448,17 +401,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.videocam), label: 'Estudio 4K'),
-          BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: '50 Filtros'),
-          BottomNavigationBarItem(icon: Icon(Icons.mic), label: 'Audio & Lo-Fi'),
-          BottomNavigationBarItem(icon: Icon(Icons.payment), label: 'Pago Global'),
+          BottomNavigationBarItem(icon: Icon(Icons.videocam, size: 20), label: 'Estudio 4K'),
+          BottomNavigationBarItem(icon: Icon(Icons.auto_awesome, size: 20), label: '50 Filtros'),
+          BottomNavigationBarItem(icon: Icon(Icons.mic, size: 20), label: 'Audio & Lo-Fi'),
+          BottomNavigationBarItem(icon: Icon(Icons.payment, size: 20), label: 'Pago \$199'),
         ],
       ),
     );
   }
 }
 
-class StudioHomeTab extends StatefulWidget {
+class StudioHomeTab extends StatelessWidget {
   final bool isSuperAdmin;
   final int freeVideosLeft;
   final VoidCallback onGenerate;
@@ -466,186 +419,75 @@ class StudioHomeTab extends StatefulWidget {
   const StudioHomeTab({super.key, required this.isSuperAdmin, required this.freeVideosLeft, required this.onGenerate});
 
   @override
-  State<StudioHomeTab> createState() => _StudioHomeTabState();
-}
-
-class _StudioHomeTabState extends State<StudioHomeTab> {
-  late VideoPlayerController _studioVideoController;
-  bool _isStudioVideoInitialized = false;
-  final TextEditingController _geminiPromptController = TextEditingController();
-  bool _isGeneratingByGemini = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _studioVideoController = VideoPlayerController.networkUrl(
-      Uri.parse('https://flutter.github.io/assets-for-video-assets/bee.mp4'),
-    )..initialize().then((_) {
-        setState(() {
-          _isStudioVideoInitialized = true;
-        });
-        _studioVideoController.setLooping(true);
-        _studioVideoController.play();
-      });
-  }
-
-  @override
-  void dispose() {
-    _studioVideoController.dispose();
-    super.dispose();
-  }
-
-  void _openGeminiCommandDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          backgroundColor: const Color(0xFF14141A),
-          title: const Row(
-            children: [
-              Icon(Icons.smart_toy, color: Color(0xFF3B82F6)),
-              SizedBox(width: 10),
-              Text('Motor de IA Gemini Studio (Escalado 4K)', style: TextStyle(color: Colors.white, fontSize: 14)),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Indica la instrucción para que Gemini optimice tu metraje básico a cine Ultra 4K:',
-                style: TextStyle(color: Colors.grey, fontSize: 12),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _geminiPromptController,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  hintText: 'Ej. Mejorar iluminación y nitidez a Ultra 4K...',
-                  filled: true,
-                  fillColor: const Color(0xFF0B0B0E),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                ),
-              ),
-              if (_isGeneratingByGemini) ...[
-                const SizedBox(height: 16),
-                const LinearProgressIndicator(color: Color(0xFF3B82F6)),
-                const SizedBox(height: 8),
-                const Text('Aplicando red neural de escalado...', style: TextStyle(color: Color(0xFF3B82F6), fontSize: 11)),
-              ]
-            ],
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
-              onPressed: _isGeneratingByGemini ? null : () async {
-                if (_geminiPromptController.text.trim().isEmpty) return;
-                setDialogState(() {
-                  _isGeneratingByGemini = true;
-                });
-                
-                await Future.delayed(const Duration(seconds: 3));
-
-                setDialogState(() {
-                  _isGeneratingByGemini = false;
-                });
-                Navigator.pop(context);
-
-                widget.onGenerate();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('¡Metraje optimizado y elevado a Ultra 4K!')),
-                );
-              },
-              child: const Text('Procesar Video IA'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.isSuperAdmin ? 'DARK CINEMA [FUNDADOR ADMIN]' : 'DARK CINEMA STUDIO',
+          isSuperAdmin ? 'DARK CINEMA [FUNDADOR ADMIN]' : 'DARK CINEMA STUDIO',
           style: const TextStyle(fontSize: 12, letterSpacing: 1.2),
         ),
         backgroundColor: const Color(0xFF14141A),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: const Color(0xFF14141A),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.3)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Créditos del ciclo (Escalado 4K):', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  const Text('Créditos del ciclo (Escalado 4K):', style: TextStyle(fontSize: 11, color: Colors.grey)),
                   Text(
-                    widget.isSuperAdmin ? 'Ilimitados (Admin/Fundador)' : '${widget.freeVideosLeft} / 3 disponibles',
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF3B82F6)),
+                    isSuperAdmin ? 'Ilimitados (Admin/Fundador)' : '$freeVideosLeft / 3 disponibles',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF3B82F6)),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
                   color: const Color(0xFF14141A),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.3)),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: _isStudioVideoInitialized
-                      ? Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: _studioVideoController.value.aspectRatio,
-                              child: VideoPlayer(_studioVideoController),
-                            ),
-                            Container(color: Colors.black26),
-                            const Positioned(
-                              bottom: 12,
-                              child: Text(
-                                'Visor Activo • Calidad Ultra 4K Optimizada por IA',
-                                style: TextStyle(color: Colors.white, fontSize: 11, backgroundColor: Colors.black54),
-                              ),
-                            )
-                          ],
-                        )
-                      : const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6))),
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.video_library, size: 50, color: Color(0xFF3B82F6)),
+                      SizedBox(height: 10),
+                      Text(
+                        'Visor 4K • Listo para Metraje de la Tablet',
+                        style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 14),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(
+                SizedBox(
+                  width: 180,
+                  height: 40,
                   child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6), padding: const EdgeInsets.all(16)),
-                    onPressed: widget.onGenerate,
-                    icon: const Icon(Icons.bolt),
-                    label: const Text('Generar / Escalar Video'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(padding: const EdgeInsets.all(16)),
-                    onPressed: () => _openGeminiCommandDialog(context),
-                    icon: const Icon(Icons.smart_toy, color: Color(0xFF3B82F6)),
-                    label: const Text('Comando Gemini'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3B82F6),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    onPressed: onGenerate,
+                    icon: const Icon(Icons.bolt, size: 16),
+                    label: const Text('Generar / Escalar', style: TextStyle(fontSize: 12)),
                   ),
                 ),
               ],
@@ -664,46 +506,46 @@ class ProFiltersTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> filters = [
-      {'name': '1. Estilo Pixar 3D Cinematic', 'isPro': true},
-      {'name': '2. Modo Plastilina (Claymation HD)', 'isPro': true},
-      {'name': '3. Estilo Avatar & Pandora', 'isPro': true},
-      {'name': '4. Cyberpunk Neon Distopía', 'isPro': true},
-      {'name': '5. Unreal Engine 5 Photorealistic', 'isPro': true},
-      {'name': '6. Anime Masterpiece Shinkai', 'isPro': true},
-      {'name': '7. Dark Fantasy Gothic', 'isPro': true},
-      {'name': '8. Óleo Renascentista', 'isPro': true},
-      {'name': '9. Sci-Fi Interstellar 8D', 'isPro': true},
-      {'name': '10. Noir Detective 1940s', 'isPro': true},
-      {'name': '11. Estilo Cómics Marvel/DC', 'isPro': true},
-      {'name': '12. Retro VHS Analógico 90s', 'isPro': true},
-      {'name': '13. Golden Hour Luxury Glow', 'isPro': true},
-      {'name': '14. Minimalista Chukum & Madera', 'isPro': true},
-      {'name': '15. Termográfico Predator AI', 'isPro': true},
-      {'name': '16. Estilo Matrix Code Stream', 'isPro': true},
-      {'name': '17. Cinematic Teal & Orange Pro', 'isPro': true},
-      {'name': '18. Acuarela Artística Digital', 'isPro': true},
-      {'name': '19. Estilo Stop-Motion Clásico', 'isPro': true},
-      {'name': '20. Hyper-Realistic 8K Portrait', 'isPro': true},
-      {'name': '21. Estilo Neón Synthwave', 'isPro': true},
-      {'name': '22. Drama Monocromático Profundo', 'isPro': true},
-      {'name': '23. Estilo Cuento de Hadas Disney', 'isPro': true},
-      {'name': '24. Textura Mármol & Oro Fino', 'isPro': true},
-      {'name': '25. Estilo Fotografía de Moda Alta Costura', 'isPro': true},
-      {'name': '26 al 50. Suite Completa 25 Filtros IA Ultra', 'isPro': true},
-      {'name': 'Base 1: Cine Noir Estándar', 'isPro': false},
-      {'name': 'Base 2: Sepia Vintage Clásico', 'isPro': false},
+      {'name': '1. Pixar 3D Cinematic', 'preview': 'Estilo animación 3D de alta gama', 'isPro': true},
+      {'name': '2. Modo Plastilina HD', 'preview': 'Textura arcilla y stop-motion real', 'isPro': true},
+      {'name': '3. Estilo Avatar & Pandora', 'preview': 'Tonos bioluminiscentes y selva', 'isPro': true},
+      {'name': '4. Cyberpunk Neon Distopía', 'preview': 'Luces de neón y lluvia urbana', 'isPro': true},
+      {'name': '5. Unreal Engine 5 Pro', 'preview': 'Fotorrealismo extremo en render', 'isPro': true},
+      {'name': '6. Anime Shinkai Master', 'isPro': true, 'preview': 'Cielos vibrantes y atardeceres anime'},
+      {'name': '7. Dark Fantasy Gothic', 'preview': 'Sombras profundas y castillos', 'isPro': true},
+      {'name': '8. Óleo Renascentista', 'preview': 'Pinceladas de museo clásico', 'isPro': true},
+      {'name': '9. Sci-Fi Interstellar 8D', 'preview': 'Espacio profundo y distorsión', 'isPro': true},
+      {'name': '10. Noir Detective 1940s', 'preview': 'Blanco y negro dramático', 'isPro': true},
+      {'name': '11. Cómics Marvel/DC', 'preview': 'Entintado y colores pop-art', 'isPro': true},
+      {'name': '12. Retro VHS Analógico', 'preview': 'Ruido magnético y fecha naranja', 'isPro': true},
+      {'name': '13. Golden Hour Luxury', 'preview': 'Luz cálida de atardecer boutique', 'isPro': true},
+      {'name': '14. Chukum & Madera', 'preview': 'Estilo minimalista natural y cálido', 'isPro': true},
+      {'name': '15. Termográfico AI', 'preview': 'Visor de calor y espectro térmico', 'isPro': true},
+      {'name': '16. Matrix Code Stream', 'preview': 'Lluvia digital verde neón', 'isPro': true},
+      {'name': '17. Teal & Orange Pro', 'preview': 'Contraste cinematográfico de estudio', 'isPro': true},
+      {'name': '18. Acuarela Digital', 'preview': 'Efecto pintura sobre papel húmedo', 'isPro': true},
+      {'name': '19. Stop-Motion Clásico', 'preview': 'Fotogramas artesanales con grano', 'isPro': true},
+      {'name': '20. Hyper-Realistic 8K', 'preview': 'Retrato con detalle ultra nítido', 'isPro': true},
+      {'name': '21. Neón Synthwave 80s', 'preview': 'Atardecer retro con retícula láser', 'isPro': true},
+      {'name': '22. Drama Monocromático', 'preview': 'Grisáceos profundos y expresivos', 'isPro': true},
+      {'name': '23. Cuento de Hadas Disney', 'preview': 'Fantasía luminosa y colorida', 'isPro': true},
+      {'name': '24. Mármol & Oro Fino', 'preview': 'Texturas de lujo y acabados oro', 'isPro': true},
+      {'name': '25. Moda Alta Costura', 'preview': 'Iluminación de pasarela internacional', 'isPro': true},
+      {'name': '26 al 50. Suite 25 Filtros IA', 'preview': 'Colección avanzada de efectos extra', 'isPro': true},
+      {'name': 'Base 1: Cine Noir', 'preview': 'Clásico y elegante', 'isPro': false},
+      {'name': 'Base 2: Sepia Vintage', 'preview': 'Tono envejecido tradicional', 'isPro': false},
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Galería Oficial: 50 Filtros Pro en Ultra 4K', style: TextStyle(fontSize: 12)), backgroundColor: const Color(0xFF14141A)),
+      appBar: AppBar(title: const Text('Galería: 50 Filtros Pro con Vista Previa', style: TextStyle(fontSize: 12)), backgroundColor: const Color(0xFF14141A)),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(12.0),
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 1.3,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 1.15,
           ),
           itemCount: filters.length,
           itemBuilder: (context, index) {
@@ -715,28 +557,53 @@ class ProFiltersTab extends StatelessWidget {
                 if (locked) {
                   _showPaywall(context);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Filtro "${filter['name']}" aplicado con éxito.')));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Aplicando filtro "${filter['name']}"...')));
                 }
               },
               child: Container(
                 decoration: BoxDecoration(
                   color: const Color(0xFF14141A),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: locked ? Colors.amber.withOpacity(0.4) : Colors.white10),
                 ),
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(locked ? Icons.lock : Icons.auto_awesome, color: locked ? Colors.amber : const Color(0xFF3B82F6), size: 26),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(locked ? Icons.lock : Icons.auto_awesome, color: locked ? Colors.amber : const Color(0xFF3B82F6), size: 20),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            filter['name'],
+                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 6),
-                    Text(
-                      filter['name'],
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0B0B0E),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        filter['preview'],
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 9.5, color: Colors.grey),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     if (locked)
-                      const Text('Pro (\$199 MXN / Mes)', style: TextStyle(fontSize: 8.5, color: Colors.amber)),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 4),
+                        child: Text('Pro (\$199 MXN)', style: TextStyle(fontSize: 8, color: Colors.amber)),
+                      ),
                   ],
                 ),
               ),
@@ -752,19 +619,16 @@ class ProFiltersTab extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF14141A),
-        title: const Text('Función Pro Exclusiva', style: TextStyle(color: Colors.white)),
+        title: const Text('Función Pro Exclusiva', style: TextStyle(color: Colors.white, fontSize: 16)),
         content: const Text(
-          'Desbloquea los 50 filtros profesionales suscribiéndote por \$199 MXN al mes.',
-          style: TextStyle(color: Colors.grey),
+          'Desbloquea los 50 filtros profesionales con vista previa en vivo suscribiéndote por \$199 MXN al mes.',
+          style: TextStyle(color: Colors.grey, fontSize: 12),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cerrar')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Redirigiendo a pasarela global de pagos...')));
-            },
+            onPressed: () => Navigator.pop(context),
             child: const Text('Ir a Pagar (\$199 MXN)'),
           ),
         ],
@@ -773,75 +637,128 @@ class ProFiltersTab extends StatelessWidget {
   }
 }
 
-class AudioStudioTab extends StatelessWidget {
-  final bool isSuperAdmin;
-  const AudioStudioTab({super.key, required this.isSuperAdmin});
+class AudioMusicStudioScreen extends StatelessWidget {
+  const AudioMusicStudioScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Audio Studio, Clonación de Voz & Lo-Fi 8D', style: TextStyle(fontSize: 12)), backgroundColor: const Color(0xFF14141A)),
+      appBar: AppBar(
+        title: const Text('Estudio de Audio, Voz IA & Lo-Fi Beats', style: TextStyle(fontSize: 12)),
+        backgroundColor: const Color(0xFF14141A),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Grabación y Clonación de Voz con IA', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF14141A),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.3)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Micrófono de Estudio & Masterización 8D', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
-                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Grabando voz y aplicando masterización espacial de estudio...')),
-                    ),
-                    child: const Text('Grabar & Clonar'),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text('Generador de Ambientes Lo-Fi & Frecuencias Cinemáticas', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-            const SizedBox(height: 10),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Clonación y Masterización de Voz', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white)),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: const Color(0xFF14141A),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.3)),
                 ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.radio, size: 48, color: Color(0xFF3B82F6)),
-                      const SizedBox(height: 12),
-                      const Text('Sintonizador Lo-Fi Activo (Lluvias, Neón, Vinilo)', style: TextStyle(color: Colors.white, fontSize: 12)),
-                      const SizedBox(height: 12),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
-                        onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Reproduciendo atmósfera Lo-Fi cinemática en segundo plano...')),
-                        ),
-                        child: const Text('Reproducir Lo-Fi Beats'),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Micrófono de Estudio 8D', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                        SizedBox(height: 2),
+                        Text('Procesa tu voz con IA espacial', style: TextStyle(color: Colors.grey, fontSize: 10)),
+                      ],
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF3B82F6),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       ),
-                    ],
-                  ),
+                      onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Grabando voz y aplicando masterización espacial...')),
+                      ),
+                      child: const Text('Grabar Voz', style: TextStyle(fontSize: 11)),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              const Text('Consola de Beats Lo-Fi Predeterminados', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white)),
+              const SizedBox(height: 8),
+              GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics,
+                childAspectRatio: 1.6,
+                children: [
+                  _buildLofiCard(context, 'Lluvia Nocturna Lo-Fi', Icons.cloud_queue, 'Ambiente relajante con vinilo'),
+                  _buildLofiCard(context, 'Neon City Vibes', Icons.nightlife, 'Frecuencias urbanas de medianoche'),
+                  _buildLofiCard(context, 'Cinematic Chillhop', Icons.headphones, 'Ritmos suaves para edición'),
+                  _buildLofiCard(context, 'Space Ambient 8D', Icons.blur_circular, 'Sonidos envolventes estelares'),
+                ],
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLofiCard(BuildContext context, String title, IconData icon, String subtitle) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF14141A),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white10),
+      ),
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: const Color(0xFF3B82F6), size: 18),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 9, color: Colors.grey),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 6),
+          SizedBox(
+            height: 24,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF3B82F6).withOpacity(0.2),
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+              ),
+              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Reproduciendo atmósfera: $title')),
+              ),
+              child: const Text('Reproducir', style: TextStyle(fontSize: 9, color: Colors.white)),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -870,19 +787,19 @@ class _SubscriptionCheckoutTabState extends State<SubscriptionCheckoutTab> {
             children: [
               const Text(
                 'Membresía Creator Pro (Global)',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               const Text(
-                'Desbloquea procesamiento ilimitado en Ultra 4K, 50 filtros profesionales y estudio de audio 8D con adaptación de moneda local.',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+                'Desbloquea procesamiento ilimitado en Ultra 4K, 50 filtros profesionales y estudio de audio con conversión de moneda local.',
+                style: TextStyle(fontSize: 11, color: Colors.grey),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: const Color(0xFF14141A),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.4)),
                 ),
                 child: Column(
@@ -890,40 +807,40 @@ class _SubscriptionCheckoutTabState extends State<SubscriptionCheckoutTab> {
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Equivalente mensual base:', style: TextStyle(color: Colors.white70, fontSize: 13)),
-                        Text('\$199.00 MXN', style: TextStyle(color: Color(0xFF3B82F6), fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text('Equivalente mensual:', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                        Text('\$199.00 MXN', style: TextStyle(color: Color(0xFF3B82F6), fontSize: 15, fontWeight: FontWeight.bold)),
                       ],
                     ),
-                    const Divider(color: Colors.white24, height: 24),
+                    const Divider(color: Colors.white24, height: 18),
                     widget.isSuperAdmin
                         ? const Text(
                             '✨ Cuenta con Estatus de Fundador / VIP. Ingresos y regalías pasivas del 2% vinculadas a tus cuentas globales.',
-                            style: TextStyle(color: Colors.greenAccent, fontSize: 12, height: 1.4),
+                            style: TextStyle(color: Colors.greenAccent, fontSize: 11, height: 1.3),
                           )
                         : const Text(
-                            '🌍 La pasarela detecta automáticamente el país del dispositivo y realiza la conversión a la moneda local correspondiente.',
-                            style: TextStyle(color: Colors.amber, fontSize: 12, height: 1.4),
+                            '🌍 La pasarela detecta automáticamente el país del dispositivo y realiza la conversión a la moneda local.',
+                            style: TextStyle(color: Colors.amber, fontSize: 11, height: 1.3),
                           ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
-              const Text('Método de Pago Internacional', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
+              const Text('Método de Pago', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
                     child: ChoiceChip(
-                      label: const Text('Tarjeta Global'),
+                      label: const Text('Tarjeta Global', style: TextStyle(fontSize: 11)),
                       selected: _selectedPaymentMethod == 'tarjeta',
                       onSelected: (selected) => setState(() => _selectedPaymentMethod = 'tarjeta'),
                       selectedColor: const Color(0xFF3B82F6),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: ChoiceChip(
-                      label: const Text('PayPal / App Stores'),
+                      label: const Text('PayPal / App Stores', style: TextStyle(fontSize: 11)),
                       selected: _selectedPaymentMethod == 'paypal',
                       onSelected: (selected) => setState(() => _selectedPaymentMethod = 'paypal'),
                       selectedColor: const Color(0xFF3B82F6),
@@ -931,17 +848,17 @@ class _SubscriptionCheckoutTabState extends State<SubscriptionCheckoutTab> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 18),
               if (_selectedPaymentMethod == 'tarjeta') ...[
                 TextField(
                   decoration: InputDecoration(
                     hintText: 'Número de Tarjeta',
                     filled: true,
                     fillColor: const Color(0xFF14141A),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     Expanded(
@@ -950,11 +867,11 @@ class _SubscriptionCheckoutTabState extends State<SubscriptionCheckoutTab> {
                           hintText: 'MM/AA',
                           filled: true,
                           fillColor: const Color(0xFF14141A),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: TextField(
                         obscureText: true,
@@ -962,7 +879,7 @@ class _SubscriptionCheckoutTabState extends State<SubscriptionCheckoutTab> {
                           hintText: 'CVV',
                           filled: true,
                           fillColor: const Color(0xFF14141A),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
                         ),
                       ),
                     ),
@@ -970,25 +887,25 @@ class _SubscriptionCheckoutTabState extends State<SubscriptionCheckoutTab> {
                 ),
               ] else ...[
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: const Color(0xFF14141A),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Text(
-                    'Se procesará mediante la tienda de aplicaciones oficial o PayPal con conversión automática a tu moneda local.',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                    'Se procesará mediante la tienda de aplicaciones oficial o PayPal con conversión automática.',
+                    style: TextStyle(color: Colors.grey, fontSize: 11),
                   ),
                 ),
               ],
-              const SizedBox(height: 28),
+              const SizedBox(height: 22),
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 44,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF3B82F6),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: () {
                     if (widget.isSuperAdmin) {
@@ -1002,8 +919,8 @@ class _SubscriptionCheckoutTabState extends State<SubscriptionCheckoutTab> {
                     }
                   },
                   child: Text(
-                    widget.isSuperAdmin ? 'Ver Panel de Ingresos del Fundador' : 'Pagar Suscripción Global',
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    widget.isSuperAdmin ? 'Ver Panel de Ingresos del Fundador' : 'Pagar Suscripción (\$199 MXN)',
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
