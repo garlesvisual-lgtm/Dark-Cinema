@@ -113,6 +113,7 @@ class BiometricLegalAuthScreen extends StatefulWidget {
 class _BiometricLegalAuthScreenState extends State<BiometricLegalAuthScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _codeController = TextEditingController();
 
   void _authenticate(BuildContext context) {
     bool isSuperAdmin = _emailController.text.trim().toLowerCase() == 'adolfo@darkcinema.app' || _emailController.text.isEmpty;
@@ -128,6 +129,42 @@ class _BiometricLegalAuthScreenState extends State<BiometricLegalAuthScreen> {
       context,
       MaterialPageRoute(builder: (context) => const MainNavigationScreen(isSuperAdmin: true)),
     );
+  }
+
+  void _redeemCode(BuildContext context) {
+    String code = _codeController.text.trim().toUpperCase();
+
+    // Fecha límite para códigos de YouTubers / Creadores (30 días: 26 de Octubre de 2026)
+    DateTime expirationDate = DateTime(2026, 10, 26);
+    bool isExpired = DateTime.now().isAfter(expirationDate);
+
+    if (code == 'DARK-FOUNDER-ADOLFO-99X' || code == 'DARK-VIP-FAMILIA-ANDREA-77') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('¡Acceso VIP verificado con éxito para $code!')),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainNavigationScreen(isSuperAdmin: true)),
+      );
+    } else if (code == 'YOUTUBE-PRO' || code == 'CREATOR-PASS') {
+      if (isExpired) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Este código de creador ha expirado (vigencia de 30 días terminada).')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('¡Código de Creador Pro verificado! Acceso temporal por 30 días concedido.')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainNavigationScreen(isSuperAdmin: true)),
+        );
+      }
+    } else if (code.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor, introduce un código válido.')));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Código inválido.')));
+    }
   }
 
   @override
@@ -167,7 +204,7 @@ class _BiometricLegalAuthScreenState extends State<BiometricLegalAuthScreen> {
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -180,18 +217,45 @@ class _BiometricLegalAuthScreenState extends State<BiometricLegalAuthScreen> {
                     child: const Text('Sign In / Acceso', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                   ),
                 ),
+                const SizedBox(height: 20),
+                const Divider(color: Colors.grey),
+                const SizedBox(height: 10),
+                const Text('¿Tienes un Código VIP o de Creador?', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _codeController,
+                  decoration: InputDecoration(
+                    hintText: 'Introduce tu código de acceso',
+                    filled: true,
+                    fillColor: const Color(0xFF14141A),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 46,
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFF3B82F6)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
+                    onPressed: () => _redeemCode(context),
+                    child: const Text('Canjear Código de Acceso', style: TextStyle(fontSize: 13, color: Color(0xFF3B82F6), fontWeight: FontWeight.bold)),
+                  ),
+                ),
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 46,
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.amber),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
                     onPressed: () => _directFounderAccess(context),
-                    icon: const Icon(Icons.workspace_premium, color: Colors.amber),
-                    label: const Text('Direct Access - Founder / Admin', style: TextStyle(fontSize: 14, color: Colors.amber, fontWeight: FontWeight.bold)),
+                    icon: const Icon(Icons.workspace_premium, color: Colors.amber, size: 18),
+                    label: const Text('Direct Access - Founder / Admin', style: TextStyle(fontSize: 13, color: Colors.amber, fontWeight: FontWeight.bold)),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -246,7 +310,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         backgroundColor: const Color(0xFF14141A),
         title: const Text('¡Has agotado tus videos gratuitos!', style: TextStyle(color: Colors.white)),
         content: const Text(
-          'Tus 3 videos gratuitos de este ciclo de 15 días han terminado. Suscríbete a Creator Pro por solo $199 MXN al mes (conversión automática a tu moneda local) para obtener creaciones ilimitadas y 50 filtros Pro.',
+          'Tus 3 videos gratuitos de este ciclo de 15 días han terminado. Suscríbete a Creator Pro por solo \$199 MXN al mes (conversión automática a tu moneda local) para obtener creaciones ilimitadas y 50 filtros Pro.',
           style: TextStyle(color: Colors.grey),
         ),
         actions: [
@@ -257,7 +321,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Redirigiendo a pasarela global de pagos...')));
             },
-            child: const Text('Suscribirse Pro ($199 MXN)'),
+            child: const Text('Suscribirse Pro (\$199 MXN)'),
           ),
         ],
       ),
@@ -434,7 +498,7 @@ class ProFiltersTab extends StatelessWidget {
                       style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                     if (locked)
-                      const Text('Pro ($199 MXN / Local)', style: TextStyle(fontSize: 9, color: Colors.amber)),
+                      const Text('Pro (\$199 MXN / Local)', style: TextStyle(fontSize: 9, color: Colors.amber)),
                   ],
                 ),
               ),
@@ -452,7 +516,7 @@ class ProFiltersTab extends StatelessWidget {
         backgroundColor: const Color(0xFF14141A),
         title: const Text('Función Pro Exclusiva', style: TextStyle(color: Colors.white)),
         content: const Text(
-          'Desbloquea los 50 filtros con IA (Pixar, Plastilina, Avatar) suscribiéndote a Creator Pro por solo $199 MXN al mes (conversión automática a tu moneda local).',
+          'Desbloquea los 50 filtros con IA (Pixar, Plastilina, Avatar) suscribiéndote a Creator Pro por solo \$199 MXN al mes (conversión automática a tu moneda local).',
           style: TextStyle(color: Colors.grey),
         ),
         actions: [
@@ -463,7 +527,7 @@ class ProFiltersTab extends StatelessWidget {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Procesando pago global...')));
             },
-            child: const Text('Suscribirse Pro ($199 MXN)'),
+            child: const Text('Suscribirse Pro (\$199 MXN)'),
           ),
         ],
       ),
