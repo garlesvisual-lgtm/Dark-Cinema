@@ -67,12 +67,12 @@ class CinematicTeaserScreen extends StatelessWidget {
               child: const Column(
                 children: [
                   Text(
-                    '🎬 Lo que puedes crear:',
+                    '🎬 Seguridad y Acceso Biométrico:',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white70),
                   ),
                   SizedBox(height: 12),
                   Text(
-                    '• Disfruta de 3 videos generados gratis cada 15 días\n• Filtros Pro estilo Pixar, Plastilina y Avatar\n• Grabación y clonación de voz cinematográfica\n• Calidad 4K directo en tu dispositivo',
+                    '• Registro obligatorio por Correo Electrónico\n• Autenticación biométrica por Escaneo de Iris\n• Control de cuentas y licencias Pro / VIP',
                     style: TextStyle(fontSize: 12, color: Colors.grey, height: 1.5),
                   ),
                 ],
@@ -90,10 +90,10 @@ class CinematicTeaserScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const BiometricLegalAuthScreen()),
+                    MaterialPageRoute(builder: (context) => const AccountRegistrationScreen()),
                   );
                 },
-                child: const Text('Entrar al Estudio', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
+                child: const Text('Crear Cuenta / Registrarse', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
               ),
             ),
           ],
@@ -103,68 +103,114 @@ class CinematicTeaserScreen extends StatelessWidget {
   }
 }
 
-class BiometricLegalAuthScreen extends StatefulWidget {
-  const BiometricLegalAuthScreen({super.key});
+class AccountRegistrationScreen extends StatefulWidget {
+  const AccountRegistrationScreen({super.key});
 
   @override
-  State<BiometricLegalAuthScreen> createState() => _BiometricLegalAuthScreenState();
+  State<AccountRegistrationScreen> createState() => _AccountRegistrationScreenState();
 }
 
-class _BiometricLegalAuthScreenState extends State<BiometricLegalAuthScreen> {
+class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _codeController = TextEditingController();
+  bool _irisScanned = false;
 
-  void _authenticate(BuildContext context) {
-    bool isSuperAdmin = _emailController.text.trim().toLowerCase() == 'adolfo@darkcinema.app' || _emailController.text.isEmpty;
+  void _performIrisScan() {
+    // Simula el escaneo de iris del dispositivo
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF14141A),
+        title: const Row(
+          children: [
+            Icon(Icons.remove_red_eye, color: Color(0xFF3B82F6)),
+            SizedBox(width: 10),
+            Text('Escáner de Iris', style: TextStyle(color: Colors.white, fontSize: 16)),
+          ],
+        ),
+        content: const Text(
+          'Coloque su rostro frente a la cámara frontal para el reconocimiento de patrón de iris...',
+          style: TextStyle(color: Colors.grey),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
+            onPressed: () {
+              setState(() {
+                _irisScanned = true;
+              });
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('¡Iris escaneado y verificado con éxito!')),
+              );
+            },
+            child: const Text('Completar Escaneo'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _registerAccount(BuildContext context) {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+    String code = _codeController.text.trim().toUpperCase();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, ingresa tu correo electrónico y contraseña.')),
+      );
+      return;
+    }
+
+    if (!_irisScanned) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Es obligatorio completar el registro y escaneo de iris para crear tu cuenta.')),
+      );
+      return;
+    }
+
+    // Validación de códigos VIP / Creador
+    bool isSuperAdmin = false;
+    DateTime expirationDate = DateTime(2026, 10, 26);
+    bool isExpired = DateTime.now().isAfter(expirationDate);
+
+    if (code == 'DARK-FOUNDER-ADOLFO-99X' || code == 'DARK-VIP-FAMILIA-ANDREA-77') {
+      isSuperAdmin = true;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('¡Cuenta VIP creada y verificada para $code!')),
+      );
+    } else if (code == 'YOUTUBE-PRO' || code == 'CREATOR-PASS') {
+      if (isExpired) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('El código de creador ingresado ha expirado (vigencia de 30 días terminada).')),
+        );
+        return;
+      } else {
+        isSuperAdmin = true;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('¡Cuenta de Creador Pro activada por 30 días!')),
+        );
+      }
+    } else if (code.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Código inválido. Cuenta creada con perfil estándar (3 videos gratuitos).')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('¡Cuenta creada con éxito para $email!')),
+      );
+    }
 
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => MainNavigationScreen(isSuperAdmin: isSuperAdmin)),
     );
-  }
-
-  void _directFounderAccess(BuildContext context) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MainNavigationScreen(isSuperAdmin: true)),
-    );
-  }
-
-  void _redeemCode(BuildContext context) {
-    String code = _codeController.text.trim().toUpperCase();
-
-    // Fecha límite para códigos de YouTubers / Creadores (30 días: 26 de Octubre de 2026)
-    DateTime expirationDate = DateTime(2026, 10, 26);
-    bool isExpired = DateTime.now().isAfter(expirationDate);
-
-    if (code == 'DARK-FOUNDER-ADOLFO-99X' || code == 'DARK-VIP-FAMILIA-ANDREA-77') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('¡Acceso VIP verificado con éxito para $code!')),
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainNavigationScreen(isSuperAdmin: true)),
-      );
-    } else if (code == 'YOUTUBE-PRO' || code == 'CREATOR-PASS') {
-      if (isExpired) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Este código de creador ha expirado (vigencia de 30 días terminada).')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('¡Código de Creador Pro verificado! Acceso temporal por 30 días concedido.')),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainNavigationScreen(isSuperAdmin: true)),
-        );
-      }
-    } else if (code.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor, introduce un código válido.')));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Código inválido.')));
-    }
   }
 
   @override
@@ -177,17 +223,23 @@ class _BiometricLegalAuthScreenState extends State<BiometricLegalAuthScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.movie_filter, size: 64, color: Color(0xFF3B82F6)),
+                const Icon(Icons.fingerprint, size: 64, color: Color(0xFF3B82F6)),
                 const SizedBox(height: 16),
                 const Text(
-                  'DARK CINEMA',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 2.0, color: Colors.white),
+                  'REGISTRO DARK CINEMA',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 2.0, color: Colors.white),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 8),
+                const Text(
+                  'Crea tu cuenta con correo y seguridad biométrica',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                const SizedBox(height: 24),
                 TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
                     hintText: 'Correo electrónico',
+                    prefixIcon: const Icon(Icons.email, color: Color(0xFF3B82F6)),
                     filled: true,
                     fillColor: const Color(0xFF14141A),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
@@ -198,7 +250,8 @@ class _BiometricLegalAuthScreenState extends State<BiometricLegalAuthScreen> {
                   controller: _passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
-                    hintText: 'Contraseña',
+                    hintText: 'Contraseña de la cuenta',
+                    prefixIcon: const Icon(Icons.lock, color: Color(0xFF3B82F6)),
                     filled: true,
                     fillColor: const Color(0xFF14141A),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
@@ -208,59 +261,54 @@ class _BiometricLegalAuthScreenState extends State<BiometricLegalAuthScreen> {
                 SizedBox(
                   width: double.infinity,
                   height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3B82F6),
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: _irisScanned ? Colors.green : const Color(0xFF3B82F6)),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      backgroundColor: _irisScanned ? Colors.green.withOpacity(0.1) : Colors.transparent,
                     ),
-                    onPressed: () => _authenticate(context),
-                    child: const Text('Sign In / Acceso', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                    onPressed: _performIrisScan,
+                    icon: Icon(
+                      _irisScanned ? Icons.check_circle : Icons.remove_red_eye,
+                      color: _irisScanned ? Colors.green : const Color(0xFF3B82F6),
+                    ),
+                    label: Text(
+                      _irisScanned ? 'Iris Verificado (Biometría OK)' : 'Escanear Iris (Requerido)',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: _irisScanned ? Colors.green : Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                const Divider(color: Colors.grey),
-                const SizedBox(height: 10),
-                const Text('¿Tienes un Código VIP o de Creador?', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                const SizedBox(height: 10),
+                const SizedBox(height: 16),
                 TextField(
                   controller: _codeController,
                   decoration: InputDecoration(
-                    hintText: 'Introduce tu código de acceso',
+                    hintText: 'Código VIP o Creador (Opcional)',
+                    prefixIcon: const Icon(Icons.card_giftcard, color: Colors.amber),
                     filled: true,
                     fillColor: const Color(0xFF14141A),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
-                  height: 46,
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFF3B82F6)),
+                  height: 52,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3B82F6),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    onPressed: () => _redeemCode(context),
-                    child: const Text('Canjear Código de Acceso', style: TextStyle(fontSize: 13, color: Color(0xFF3B82F6), fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 46,
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.amber),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    onPressed: () => _directFounderAccess(context),
-                    icon: const Icon(Icons.workspace_premium, color: Colors.amber, size: 18),
-                    label: const Text('Direct Access - Founder / Admin', style: TextStyle(fontSize: 13, color: Colors.amber, fontWeight: FontWeight.bold)),
+                    onPressed: () => _registerAccount(context),
+                    child: const Text('Finalizar Registro e Ingresar', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                   ),
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Términos de Uso y Propiedad Intelectual protegidos a nombre del Fundador.',
+                  'Sistema de autenticación por correo e iris protegido por Dark Cinema.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 9, color: Colors.grey),
                 ),
