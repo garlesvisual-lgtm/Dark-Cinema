@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:video_player/video_player.dart';
+import 'dart:io';
 
 void main() {
   runApp(const DarkCinemaEcosystemApp());
@@ -24,9 +27,6 @@ class DarkCinemaEcosystemApp extends StatelessWidget {
       supportedLocales: const [
         Locale('es', 'MX'),
         Locale('en', 'US'),
-        Locale('fr', 'FR'),
-        Locale('pt', 'BR'),
-        Locale('ja', 'JP'),
       ],
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -35,10 +35,10 @@ class DarkCinemaEcosystemApp extends StatelessWidget {
       ],
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0B0B0E),
-        primaryColor: const Color(0xFF1C1C24),
+        scaffoldBackgroundColor: const Color(0xFF050508),
+        primaryColor: const Color(0xFF3B82F6),
         colorScheme: const ColorScheme.dark(
-          surface: Color(0xFF14141A),
+          surface: Color(0xFF12121A),
           secondary: Color(0xFF3B82F6),
         ),
         fontFamily: 'SansSerif',
@@ -48,79 +48,122 @@ class DarkCinemaEcosystemApp extends StatelessWidget {
   }
 }
 
-class CinematicTeaserScreen extends StatelessWidget {
+// CORTOMETRAJE DE BIENVENIDA INICIAL CON REPRODUCTOR ACTIVO
+class CinematicTeaserScreen extends StatefulWidget {
   const CinematicTeaserScreen({super.key});
+
+  @override
+  State<CinematicTeaserScreen> createState() => _CinematicTeaserScreenState();
+}
+
+class _CinematicTeaserScreenState extends State<CinematicTeaserScreen> {
+  late VideoPlayerController _teaserController;
+  bool _isTeaserInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Video de demostración cinematográfica en streaming para la bienvenida inicial
+    _teaserController = VideoPlayerController.networkUrl(
+      Uri.parse('https://assets.mixkit.co/videos/preview/mixkit-set-of-plate-plated-dishes-in-a-restaurant-42653-large.mp4'),
+    )..initialize().then((_) {
+        setState(() {
+          _isTeaserInitialized = true;
+        });
+        _teaserController.play();
+        _teaserController.setLooping(true);
+      });
+  }
+
+  @override
+  void dispose() {
+    _teaserController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF0B0B0E), Color(0xFF14141A), Color(0xFF0B0B0E)],
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          _isTeaserInitialized
+              ? FittedBox(
+                  fit: BoxFit.cover,
+                  child: SizedBox(
+                    width: _teaserController.value.size.width,
+                    height: _teaserController.value.size.height,
+                    child: VideoPlayer(_teaserController),
+                  ),
+                )
+              : Container(color: const Color(0xFF050508)),
+          // Capa de degradado oscuro para legibilidad de marca
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withOpacity(0.6),
+                  Colors.black.withOpacity(0.3),
+                  Colors.black.withOpacity(0.9),
+                ],
+              ),
+            ),
           ),
-        ),
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.movie_filter, size: 60, color: Color(0xFF3B82F6)),
-            const SizedBox(height: 10),
-            const Text(
-              'DARK CINEMA',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 4.0, color: Colors.white),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'Ecosistema Global • Motor Ultra 4K/8D & Regalías del Fundador',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 11, color: Colors.grey),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF14141A),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.4)),
-                ),
-                child: const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.play_circle_filled, size: 56, color: Color(0xFF3B82F6)),
-                      SizedBox(height: 10),
-                      Text(
-                        'Cortometraje de Bienvenida 4K [Activo]',
-                        style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.all(28.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    const SizedBox(height: 30),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black45,
+                        border: Border.all(color: const Color(0xFF3B82F6), width: 1.5),
                       ),
-                    ],
+                      child: const Icon(Icons.movie_filter_rounded, size: 36, color: Color(0xFF60A5FA)),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'DARK CINEMA',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 5.0, color: Colors.white),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Cortometraje de Bienvenida 4K [Reproduciendo]',
+                      style: TextStyle(fontSize: 11, color: Colors.amberAccent, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3B82F6),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      elevation: 8,
+                    ),
+                    onPressed: () {
+                      _teaserController.pause();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const AccountRegistrationScreen()),
+                      );
+                    },
+                    child: const Text('Entrar al Ecosistema', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                   ),
                 ),
-              ),
+              ],
             ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: 220,
-              height: 44,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF3B82F6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AccountRegistrationScreen()),
-                  );
-                },
-                child: const Text('Entrar al Ecosistema', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -143,20 +186,21 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF14141A),
+        backgroundColor: const Color(0xFF141420),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Row(
           children: [
-            Icon(Icons.remove_red_eye, color: Color(0xFF3B82F6)),
+            Icon(Icons.remove_red_eye_rounded, color: Color(0xFF3B82F6)),
             SizedBox(width: 10),
-            Text('Escáner Biométrico de Iris', style: TextStyle(color: Colors.white, fontSize: 15)),
+            Text('Escáner Biométrico', style: TextStyle(color: Colors.white, fontSize: 16)),
           ],
         ),
         content: const Text(
-          'Alineando sensor frontal para reconocimiento biométrico y validación de seguridad...',
-          style: TextStyle(color: Colors.grey, fontSize: 12),
+          'Validando identidad de alta seguridad mediante sensor frontal de la tablet...',
+          style: TextStyle(color: Colors.grey, fontSize: 13),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar', style: TextStyle(color: Colors.grey))),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
             onPressed: () {
@@ -165,7 +209,7 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
               });
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('¡Iris escaneado y verificado con éxito!')),
+                const SnackBar(content: Text('¡Iris escaneado y verificado correctamente!')),
               );
             },
             child: const Text('Confirmar'),
@@ -181,16 +225,12 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
     String code = _codeController.text.trim().toUpperCase();
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ingresa tu correo y contraseña.')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ingresa correo y contraseña.')));
       return;
     }
 
     if (!_irisScanned) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Es indispensable completar el escaneo de iris.')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Es necesario completar el escaneo de iris.')));
       return;
     }
 
@@ -198,23 +238,15 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
 
     if (code == 'DARK-FOUNDER-ADOLFO-99X') {
       isSuperAdmin = true;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('¡Bienvenido Adolfo García García! Acceso Fundador Admin & Regalías del 2% Activo.')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('¡Bienvenido Adolfo García García! Acceso Fundador Admin & Regalías 2%.')));
     } else if (code == 'DARK-VIP-FAMILIA-ANDREA-77') {
       isSuperAdmin = true;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('¡Bienvenida Andrea! Cuenta VIP Familiar autorizada.')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('¡Bienvenida Andrea! Cuenta VIP Familiar activada.')));
     } else if (code == 'YOUTUBE-PRO' || code == 'CREATOR-PASS') {
       isSuperAdmin = true;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('¡Pase de Creador / Youtuber validado por 30 días!')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('¡Pase de Creador validado con éxito!')));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('¡Cuenta creada con éxito para $email!')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('¡Bienvenido a bordo, $email!')));
     }
 
     Navigator.pushReplacement(
@@ -226,93 +258,106 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF050508), Color(0xFF12121A)],
+          ),
+        ),
+        padding: const EdgeInsets.all(28.0),
         child: Center(
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.movie_creation, size: 50, color: Color(0xFF3B82F6)),
-                const SizedBox(height: 10),
+                const Icon(Icons.movie_creation_outlined, size: 54, color: Color(0xFF3B82F6)),
+                const SizedBox(height: 12),
                 const Text(
-                  'DARK CINEMA',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 3.0, color: Colors.white),
+                  'ACCESO AL SISTEMA',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 4.0, color: Colors.white),
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 24),
                 TextField(
                   controller: _emailController,
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
                   decoration: InputDecoration(
                     hintText: 'Correo electrónico',
-                    prefixIcon: const Icon(Icons.email, color: Color(0xFF3B82F6)),
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFF3B82F6)),
                     filled: true,
-                    fillColor: const Color(0xFF14141A),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                    fillColor: const Color(0xFF161622),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 14),
                 TextField(
                   controller: _passwordController,
                   obscureText: true,
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
                   decoration: InputDecoration(
                     hintText: 'Contraseña',
-                    prefixIcon: const Icon(Icons.lock, color: Color(0xFF3B82F6)),
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF3B82F6)),
                     filled: true,
-                    fillColor: const Color(0xFF14141A),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 42,
-                  child: OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: _irisScanned ? Colors.green : const Color(0xFF3B82F6)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      backgroundColor: _irisScanned ? Colors.green.withOpacity(0.1) : Colors.transparent,
-                    ),
-                    onPressed: _performIrisScan,
-                    icon: Icon(
-                      _irisScanned ? Icons.check_circle : Icons.remove_red_eye,
-                      color: _irisScanned ? Colors.green : const Color(0xFF3B82F6),
-                      size: 18,
-                    ),
-                    label: Text(
-                      _irisScanned ? 'Iris Verificado OK' : 'Escanear Iris (Requerido)',
-                      style: TextStyle(fontSize: 12, color: _irisScanned ? Colors.green : Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _codeController,
-                  decoration: InputDecoration(
-                    hintText: 'Código de Acceso (Fundador / VIP / Creador)',
-                    prefixIcon: const Icon(Icons.card_giftcard, color: Colors.amber),
-                    filled: true,
-                    fillColor: const Color(0xFF14141A),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                    fillColor: const Color(0xFF161622),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
                   ),
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
-                  width: 200,
-                  height: 44,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3B82F6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: _irisScanned ? Colors.greenAccent : const Color(0xFF3B82F6), width: 1.5),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      backgroundColor: _irisScanned ? Colors.greenAccent.withOpacity(0.1) : const Color(0xFF161622),
                     ),
-                    onPressed: () => _registerAccount(context),
-                    child: const Text('Entrar', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    onPressed: _performIrisScan,
+                    icon: Icon(
+                      _irisScanned ? Icons.check_circle_rounded : Icons.remove_red_eye_rounded,
+                      color: _irisScanned ? Colors.greenAccent : const Color(0xFF3B82F6),
+                      size: 20,
+                    ),
+                    label: Text(
+                      _irisScanned ? 'Iris Verificado OK' : 'Escanear Iris Biométrico',
+                      style: TextStyle(fontSize: 13, color: _irisScanned ? Colors.greenAccent : Colors.white, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 14),
+                TextField(
+                  controller: _codeController,
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  decoration: InputDecoration(
+                    hintText: 'Código de Acceso (Fundador / VIP / Creador)',
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    prefixIcon: const Icon(Icons.card_giftcard_rounded, color: Colors.amberAccent),
+                    filled: true,
+                    fillColor: const Color(0xFF161622),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: 220,
+                  height: 48,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF3B82F6),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
+                    onPressed: () => _registerAccount(context),
+                    child: const Text('Iniciar Sesión', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.1)),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 const Text(
-                  '© 2026 Adolfo García García. Regalías pasivas justas del 2% para el Fundador.',
+                  '© 2026 Adolfo García García. Regalías pasivas del 2% para el Fundador.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 8, color: Colors.grey),
+                  style: TextStyle(fontSize: 9, color: Colors.grey),
                 ),
               ],
             ),
@@ -333,59 +378,11 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
-  int freeVideosLeft = 3;
-
-  void consumeFreeVideo(BuildContext context) {
-    if (widget.isSuperAdmin) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('[Modo Fundador / VIP] Renderizado ilimitado en Ultra 4K con ingresos vinculados.')),
-      );
-      return;
-    }
-
-    if (freeVideosLeft > 0) {
-      setState(() {
-        freeVideosLeft--;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Video procesado a Ultra 4K. Te quedan $freeVideosLeft créditos en este ciclo.')),
-      );
-    } else {
-      _showPaywall(context);
-    }
-  }
-
-  void _showPaywall(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF14141A),
-        title: const Text('Límite de Videos Alcanzado', style: TextStyle(color: Colors.white)),
-        content: const Text(
-          'Suscríbete a Creator Pro por \$199 MXN al mes para desbloquear creaciones ilimitadas, los 50 filtros profesionales y estudio de audio 8D.',
-          style: TextStyle(color: Colors.grey, fontSize: 12),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cerrar')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
-            onPressed: () {
-              Navigator.pop(context);
-              setState(() {
-                _currentIndex = 3;
-              });
-            },
-            child: const Text('Pagar Suscripción (\$199 MXN)'),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
-      StudioHomeTab(isSuperAdmin: widget.isSuperAdmin, freeVideosLeft: freeVideosLeft, onGenerate: () => consumeFreeVideo(context)),
+      StudioHomeTab(isSuperAdmin: widget.isSuperAdmin),
       ProFiltersTab(isSuperAdmin: widget.isSuperAdmin),
       const AudioMusicStudioScreen(),
       SubscriptionCheckoutTab(isSuperAdmin: widget.isSuperAdmin),
@@ -393,104 +390,297 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
     return Scaffold(
       body: screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        backgroundColor: const Color(0xFF14141A),
-        selectedItemColor: const Color(0xFF3B82F6),
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.videocam, size: 20), label: 'Estudio 4K'),
-          BottomNavigationBarItem(icon: Icon(Icons.auto_awesome, size: 20), label: '50 Filtros'),
-          BottomNavigationBarItem(icon: Icon(Icons.mic, size: 20), label: 'Audio & Lo-Fi'),
-          BottomNavigationBarItem(icon: Icon(Icons.payment, size: 20), label: 'Pago \$199'),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF101018),
+          border: Border(top: BorderSide(color: Colors.white.withOpacity(0.08), width: 1)),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) => setState(() => _currentIndex = index),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          selectedItemColor: const Color(0xFF3B82F6),
+          unselectedItemColor: Colors.grey,
+          type: BottomNavigationBarType.fixed,
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+          unselectedLabelStyle: const TextStyle(fontSize: 10),
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.videocam_rounded, size: 22), label: 'Estudio 4K'),
+            BottomNavigationBarItem(icon: Icon(Icons.auto_awesome_rounded, size: 22), label: '50 Filtros'),
+            BottomNavigationBarItem(icon: Icon(Icons.mic_rounded, size: 22), label: 'Audio 8D'),
+            BottomNavigationBarItem(icon: Icon(Icons.payment_rounded, size: 22), label: 'Suscripción'),
+          ],
+        ),
       ),
     );
   }
 }
 
-class StudioHomeTab extends StatelessWidget {
+// ESTUDIO 4K DEFINITIVO: VISOR COMPACTO + BANDEJA DE FILTROS + AJUSTES FINOS
+class StudioHomeTab extends StatefulWidget {
   final bool isSuperAdmin;
-  final int freeVideosLeft;
-  final VoidCallback onGenerate;
+  const StudioHomeTab({super.key, required this.isSuperAdmin});
 
-  const StudioHomeTab({super.key, required this.isSuperAdmin, required this.freeVideosLeft, required this.onGenerate});
+  @override
+  State<StudioHomeTab> createState() => _StudioHomeTabState();
+}
+
+class _StudioHomeTabState extends State<StudioHomeTab> {
+  File? _selectedVideoFile;
+  VideoPlayerController? _videoPlayerController;
+  bool _isVideoInitialized = false;
+  final ImagePicker _picker = ImagePicker();
+
+  String _activeFilter = 'Original';
+  double _contrastVal = 1.0;
+  double _brightnessVal = 0.0;
+
+  final List<Map<String, dynamic>> _quickFilters = [
+    {'name': 'Original', 'icon': Icons.movie_rounded, 'color': Colors.blue},
+    {'name': 'Cinematic Noir', 'icon': Icons.dark_mode_rounded, 'color': Colors.grey},
+    {'name': 'Cyberpunk', 'icon': Icons.bolt_rounded, 'color': Colors.purpleAccent},
+    {'name': 'Pixar 3D', 'icon': Icons.animation_rounded, 'color': Colors.amberAccent},
+    {'name': 'Golden Luxury', 'icon': Icons.star_rounded, 'color': Colors.orangeAccent},
+    {'name': 'VHS Retro', 'icon': Icons.vignette_rounded, 'color': Colors.redAccent},
+    {'name': 'Matrix Green', 'icon': Icons.code_rounded, 'color': Colors.greenAccent},
+  ];
+
+  Future<void> _pickVideoFromGallery() async {
+    final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
+    if (video != null) {
+      _loadVideoPlayer(File(video.path));
+    }
+  }
+
+  Future<void> _recordVideoFromCamera() async {
+    final XFile? video = await _picker.pickVideo(source: ImageSource.camera);
+    if (video != null) {
+      _loadVideoPlayer(File(video.path));
+    }
+  }
+
+  void _loadVideoPlayer(File videoFile) {
+    _videoPlayerController?.dispose();
+    _selectedVideoFile = videoFile;
+    _videoPlayerController = VideoPlayerController.file(videoFile)
+      ..initialize().then((_) {
+        setState(() {
+          _isVideoInitialized = true;
+        });
+        _videoPlayerController!.play();
+        _videoPlayerController!.setLooping(true);
+      });
+  }
+
+  @override
+  void dispose() {
+    _videoPlayerController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          isSuperAdmin ? 'DARK CINEMA [FUNDADOR ADMIN]' : 'DARK CINEMA STUDIO',
-          style: const TextStyle(fontSize: 12, letterSpacing: 1.2),
+          widget.isSuperAdmin ? 'DARK CINEMA [FUNDADOR ADMIN]' : 'DARK CINEMA STUDIO',
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 1.5),
         ),
-        backgroundColor: const Color(0xFF14141A),
+        backgroundColor: const Color(0xFF0D0D12),
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.folder_open_rounded, color: Color(0xFF3B82F6)),
+            onPressed: _pickVideoFromGallery,
+            tooltip: 'Abrir Galería',
+          ),
+          IconButton(
+            icon: const Icon(Icons.camera_alt_rounded, color: Colors.amberAccent),
+            onPressed: _recordVideoFromCamera,
+            tooltip: 'Grabar Video',
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF0D0D12), Color(0xFF050508)],
+          ),
+        ),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF14141A),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.3)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Créditos del ciclo (Escalado 4K):', style: TextStyle(fontSize: 11, color: Colors.grey)),
-                  Text(
-                    isSuperAdmin ? 'Ilimitados (Admin/Fundador)' : '$freeVideosLeft / 3 disponibles',
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF3B82F6)),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Expanded(
+            SizedBox(
+              height: 220,
+              width: double.infinity,
               child: Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFF14141A),
+                  gradient: const LinearGradient(colors: [Color(0xFF161622), Color(0xFF0F0F17)]),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.3)),
+                  border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.4), width: 1.5),
                 ),
-                child: const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.video_library, size: 50, color: Color(0xFF3B82F6)),
-                      SizedBox(height: 10),
-                      Text(
-                        'Visor 4K • Listo para Metraje de la Tablet',
-                        style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                child: _isVideoInitialized && _videoPlayerController != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(14.5),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            AspectRatio(
+                              aspectRatio: _videoPlayerController!.value.aspectRatio,
+                              child: VideoPlayer(_videoPlayerController!),
+                            ),
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  'Filtro: $_activeFilter',
+                                  style: const TextStyle(color: Colors.amberAccent, fontSize: 10, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.video_library_rounded, size: 40, color: Color(0xFF3B82F6)),
+                            const SizedBox(height: 10),
+                            const Text(
+                              'Visor 4K • Sin video cargado',
+                              style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6), padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
+                                  onPressed: _pickVideoFromGallery,
+                                  icon: const Icon(Icons.folder, size: 14),
+                                  label: const Text('Galería', style: TextStyle(fontSize: 11)),
+                                ),
+                                const SizedBox(width: 8),
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.amberAccent, foregroundColor: Colors.black, padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
+                                  onPressed: _recordVideoFromCamera,
+                                  icon: const Icon(Icons.camera_alt, size: 14),
+                                  label: const Text('Grabar', style: TextStyle(fontSize: 11)),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                ),
               ),
             ),
-            const SizedBox(height: 14),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 180,
-                  height: 40,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3B82F6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            const SizedBox(height: 10),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Filtros Rápidos IA (Toca para aplicar)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey)),
+            ),
+            const SizedBox(height: 6),
+            SizedBox(
+              height: 75,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: _quickFilters.length,
+                itemBuilder: (context, index) {
+                  final filter = _quickFilters[index];
+                  final bool isSelected = _activeFilter == filter['name'];
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _activeFilter = filter['name'];
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Aplicando filtro: ${filter['name']}'), duration: const Duration(milliseconds: 500)),
+                      );
+                    },
+                    child: Container(
+                      width: 70,
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(
+                        color: isSelected ? const Color(0xFF3B82F6).withOpacity(0.3) : const Color(0xFF161622),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: isSelected ? const Color(0xFF3B82F6) : Colors.white12, width: isSelected ? 2 : 1),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(filter['icon'], color: filter['color'], size: 22),
+                          const SizedBox(height: 4),
+                          Text(
+                            filter['name'],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 9.5, color: isSelected ? Colors.white : Colors.grey, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
                     ),
-                    onPressed: onGenerate,
-                    icon: const Icon(Icons.bolt, size: 16),
-                    label: const Text('Generar / Escalar', style: TextStyle(fontSize: 12)),
-                  ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF12121A),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.white10),
                 ),
-              ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Ajustes de Estudio (Contraste y Luz)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white70)),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Text('Contraste', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                        Expanded(
+                          child: Slider(
+                            value: _contrastVal,
+                            min: 0.5,
+                            max: 2.0,
+                            activeColor: const Color(0xFF3B82F6),
+                            onChanged: (val) => setState(() => _contrastVal = val),
+                          ),
+                        ),
+                        Text(_contrastVal.toStringAsFixed(1), style: const TextStyle(fontSize: 10, color: Colors.white)),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Text('Brillo', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                        Expanded(
+                          child: Slider(
+                            value: _brightnessVal,
+                            min: -1.0,
+                            max: 1.0,
+                            activeColor: Colors.amberAccent,
+                            onChanged: (val) => setState(() => _brightnessVal = val),
+                          ),
+                        ),
+                        Text(_brightnessVal.toStringAsFixed(1), style: const TextStyle(fontSize: 10, color: Colors.white)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
@@ -505,133 +695,13 @@ class ProFiltersTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> filters = [
-      {'name': '1. Pixar 3D Cinematic', 'preview': 'Estilo animación 3D de alta gama', 'isPro': true},
-      {'name': '2. Modo Plastilina HD', 'preview': 'Textura arcilla y stop-motion real', 'isPro': true},
-      {'name': '3. Estilo Avatar & Pandora', 'preview': 'Tonos bioluminiscentes y selva', 'isPro': true},
-      {'name': '4. Cyberpunk Neon Distopía', 'preview': 'Luces de neón y lluvia urbana', 'isPro': true},
-      {'name': '5. Unreal Engine 5 Pro', 'preview': 'Fotorrealismo extremo en render', 'isPro': true},
-      {'name': '6. Anime Shinkai Master', 'isPro': true, 'preview': 'Cielos vibrantes y atardeceres anime'},
-      {'name': '7. Dark Fantasy Gothic', 'preview': 'Sombras profundas y castillos', 'isPro': true},
-      {'name': '8. Óleo Renascentista', 'preview': 'Pinceladas de museo clásico', 'isPro': true},
-      {'name': '9. Sci-Fi Interstellar 8D', 'preview': 'Espacio profundo y distorsión', 'isPro': true},
-      {'name': '10. Noir Detective 1940s', 'preview': 'Blanco y negro dramático', 'isPro': true},
-      {'name': '11. Cómics Marvel/DC', 'preview': 'Entintado y colores pop-art', 'isPro': true},
-      {'name': '12. Retro VHS Analógico', 'preview': 'Ruido magnético y fecha naranja', 'isPro': true},
-      {'name': '13. Golden Hour Luxury', 'preview': 'Luz cálida de atardecer boutique', 'isPro': true},
-      {'name': '14. Chukum & Madera', 'preview': 'Estilo minimalista natural y cálido', 'isPro': true},
-      {'name': '15. Termográfico AI', 'preview': 'Visor de calor y espectro térmico', 'isPro': true},
-      {'name': '16. Matrix Code Stream', 'preview': 'Lluvia digital verde neón', 'isPro': true},
-      {'name': '17. Teal & Orange Pro', 'preview': 'Contraste cinematográfico de estudio', 'isPro': true},
-      {'name': '18. Acuarela Digital', 'preview': 'Efecto pintura sobre papel húmedo', 'isPro': true},
-      {'name': '19. Stop-Motion Clásico', 'preview': 'Fotogramas artesanales con grano', 'isPro': true},
-      {'name': '20. Hyper-Realistic 8K', 'preview': 'Retrato con detalle ultra nítido', 'isPro': true},
-      {'name': '21. Neón Synthwave 80s', 'preview': 'Atardecer retro con retícula láser', 'isPro': true},
-      {'name': '22. Drama Monocromático', 'preview': 'Grisáceos profundos y expresivos', 'isPro': true},
-      {'name': '23. Cuento de Hadas Disney', 'preview': 'Fantasía luminosa y colorida', 'isPro': true},
-      {'name': '24. Mármol & Oro Fino', 'preview': 'Texturas de lujo y acabados oro', 'isPro': true},
-      {'name': '25. Moda Alta Costura', 'preview': 'Iluminación de pasarela internacional', 'isPro': true},
-      {'name': '26 al 50. Suite 25 Filtros IA', 'preview': 'Colección avanzada de efectos extra', 'isPro': true},
-      {'name': 'Base 1: Cine Noir', 'preview': 'Clásico y elegante', 'isPro': false},
-      {'name': 'Base 2: Sepia Vintage', 'preview': 'Tono envejecido tradicional', 'isPro': false},
-    ];
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Galería: 50 Filtros Pro con Vista Previa', style: TextStyle(fontSize: 12)), backgroundColor: const Color(0xFF14141A)),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            childAspectRatio: 1.15,
-          ),
-          itemCount: filters.length,
-          itemBuilder: (context, index) {
-            final filter = filters[index];
-            final bool locked = filter['isPro'] && !isSuperAdmin;
-
-            return GestureDetector(
-              onTap: () {
-                if (locked) {
-                  _showPaywall(context);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Aplicando filtro "${filter['name']}"...')));
-                }
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFF14141A),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: locked ? Colors.amber.withOpacity(0.4) : Colors.white10),
-                ),
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(locked ? Icons.lock : Icons.auto_awesome, color: locked ? Colors.amber : const Color(0xFF3B82F6), size: 20),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            filter['name'],
-                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0B0B0E),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        filter['preview'],
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 9.5, color: Colors.grey),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (locked)
-                      const Padding(
-                        padding: EdgeInsets.only(top: 4),
-                        child: Text('Pro (\$199 MXN)', style: TextStyle(fontSize: 8, color: Colors.amber)),
-                      ),
-                  ],
-                ),
-              ),
-            );
-          },
+      appBar: AppBar(title: const Text('Galería: 50 Filtros Pro', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900)), backgroundColor: const Color(0xFF0D0D12), elevation: 0),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF0D0D12), Color(0xFF050508)]),
         ),
-      ),
-    );
-  }
-
-  void _showPaywall(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF14141A),
-        title: const Text('Función Pro Exclusiva', style: TextStyle(color: Colors.white, fontSize: 16)),
-        content: const Text(
-          'Desbloquea los 50 filtros profesionales con vista previa en vivo suscribiéndote por \$199 MXN al mes.',
-          style: TextStyle(color: Colors.grey, fontSize: 12),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cerrar')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Ir a Pagar (\$199 MXN)'),
-          ),
-        ],
+        child: const Center(child: Text('Suite completa de 50 filtros profesionales activa', style: TextStyle(color: Colors.grey, fontSize: 13))),
       ),
     );
   }
@@ -643,289 +713,31 @@ class AudioMusicStudioScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Estudio de Audio, Voz IA & Lo-Fi Beats', style: TextStyle(fontSize: 12)),
-        backgroundColor: const Color(0xFF14141A),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Clonación y Masterización de Voz', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white)),
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF14141A),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.3)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Micrófono de Estudio 8D', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                        SizedBox(height: 2),
-                        Text('Procesa tu voz con IA espacial', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                      ],
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3B82F6),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      ),
-                      onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Grabando voz y aplicando masterización espacial...')),
-                      ),
-                      child: const Text('Grabar Voz', style: TextStyle(fontSize: 11)),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text('Consola de Beats Lo-Fi Predeterminados', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white)),
-              const SizedBox(height: 8),
-              GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                childAspectRatio: 1.6,
-                children: [
-                  _buildLofiCard(context, 'Lluvia Nocturna Lo-Fi', Icons.cloud_queue, 'Ambiente relajante con vinilo'),
-                  _buildLofiCard(context, 'Neon City Vibes', Icons.nightlife, 'Frecuencias urbanas de medianoche'),
-                  _buildLofiCard(context, 'Cinematic Chillhop', Icons.headphones, 'Ritmos suaves para edición'),
-                  _buildLofiCard(context, 'Space Ambient 8D', Icons.blur_circular, 'Sonidos envolventes estelares'),
-                ],
-              ),
-            ],
-          ),
+      appBar: AppBar(title: const Text('Estudio de Audio & Lo-Fi Beats', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900)), backgroundColor: const Color(0xFF0D0D12), elevation: 0),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF0D0D12), Color(0xFF050508)]),
         ),
-      ),
-    );
-  }
-
-  Widget _buildLofiCard(BuildContext context, String title, IconData icon, String subtitle) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF14141A),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white10),
-      ),
-      padding: const EdgeInsets.all(10),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: const Color(0xFF3B82F6), size: 18),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 9, color: Colors.grey),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 6),
-          SizedBox(
-            height: 24,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF3B82F6).withOpacity(0.2),
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-              ),
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Reproduciendo atmósfera: $title')),
-              ),
-              child: const Text('Reproducir', style: TextStyle(fontSize: 9, color: Colors.white)),
-            ),
-          ),
-        ],
+        child: const Center(child: Text('Consola de masterización de voz y audio 8D lista', style: TextStyle(color: Colors.grey, fontSize: 13))),
       ),
     );
   }
 }
 
-class SubscriptionCheckoutTab extends StatefulWidget {
+class SubscriptionCheckoutTab extends StatelessWidget {
   final bool isSuperAdmin;
   const SubscriptionCheckoutTab({super.key, required this.isSuperAdmin});
 
   @override
-  State<SubscriptionCheckoutTab> createState() => _SubscriptionCheckoutTabState();
-}
-
-class _SubscriptionCheckoutTabState extends State<SubscriptionCheckoutTab> {
-  String _selectedPaymentMethod = 'tarjeta';
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pasarela de Pago Global (\$199 MXN)', style: TextStyle(fontSize: 12)), backgroundColor: const Color(0xFF14141A)),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Membresía Creator Pro (Global)',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                'Desbloquea procesamiento ilimitado en Ultra 4K, 50 filtros profesionales y estudio de audio con conversión de moneda local.',
-                style: TextStyle(fontSize: 11, color: Colors.grey),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF14141A),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.4)),
-                ),
-                child: Column(
-                  children: [
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Equivalente mensual:', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                        Text('\$199.00 MXN', style: TextStyle(color: Color(0xFF3B82F6), fontSize: 15, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                    const Divider(color: Colors.white24, height: 18),
-                    widget.isSuperAdmin
-                        ? const Text(
-                            '✨ Cuenta con Estatus de Fundador / VIP. Ingresos y regalías pasivas del 2% vinculadas a tus cuentas globales.',
-                            style: TextStyle(color: Colors.greenAccent, fontSize: 11, height: 1.3),
-                          )
-                        : const Text(
-                            '🌍 La pasarela detecta automáticamente el país del dispositivo y realiza la conversión a la moneda local.',
-                            style: TextStyle(color: Colors.amber, fontSize: 11, height: 1.3),
-                          ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text('Método de Pago', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: ChoiceChip(
-                      label: const Text('Tarjeta Global', style: TextStyle(fontSize: 11)),
-                      selected: _selectedPaymentMethod == 'tarjeta',
-                      onSelected: (selected) => setState(() => _selectedPaymentMethod = 'tarjeta'),
-                      selectedColor: const Color(0xFF3B82F6),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: ChoiceChip(
-                      label: const Text('PayPal / App Stores', style: TextStyle(fontSize: 11)),
-                      selected: _selectedPaymentMethod == 'paypal',
-                      onSelected: (selected) => setState(() => _selectedPaymentMethod = 'paypal'),
-                      selectedColor: const Color(0xFF3B82F6),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 18),
-              if (_selectedPaymentMethod == 'tarjeta') ...[
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Número de Tarjeta',
-                    filled: true,
-                    fillColor: const Color(0xFF14141A),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: 'MM/AA',
-                          filled: true,
-                          fillColor: const Color(0xFF14141A),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: TextField(
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          hintText: 'CVV',
-                          filled: true,
-                          fillColor: const Color(0xFF14141A),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ] else ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF14141A),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Text(
-                    'Se procesará mediante la tienda de aplicaciones oficial o PayPal con conversión automática.',
-                    style: TextStyle(color: Colors.grey, fontSize: 11),
-                  ),
-                ),
-              ],
-              const SizedBox(height: 22),
-              SizedBox(
-                width: double.infinity,
-                height: 44,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3B82F6),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  onPressed: () {
-                    if (widget.isSuperAdmin) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('[Modo Fundador] Las cuentas de cobro y regalías del 2% están listas para configurarse.')),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('¡Suscripción global procesada y activada con éxito!')),
-                      );
-                    }
-                  },
-                  child: Text(
-                    widget.isSuperAdmin ? 'Ver Panel de Ingresos del Fundador' : 'Pagar Suscripción (\$199 MXN)',
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ],
-          ),
+      appBar: AppBar(title: const Text('Pasarela de Pago Global', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900)), backgroundColor: const Color(0xFF0D0D12), elevation: 0),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF0D0D12), Color(0xFF050508)]),
+        ),
+        child: Center(
+          child: Text(isSuperAdmin ? 'Panel de Fundador & Regalías 2% Activo' : 'Membresía Creator Pro ($199 MXN)', style: const TextStyle(color: Colors.white, fontSize: 14)),
         ),
       ),
     );
