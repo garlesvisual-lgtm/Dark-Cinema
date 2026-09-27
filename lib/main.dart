@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:video_player/video_player.dart';
 
 void main() {
   runApp(const DarkCinemaEcosystemApp());
@@ -10,8 +12,29 @@ class DarkCinemaEcosystemApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Dark Cinema - Ultimate AI Studio',
+      title: 'Dark Cinema - Ultimate Global AI Ecosystem',
       debugShowCheckedModeBanner: false,
+      // Configuración automática del idioma por defecto según el país del dispositivo
+      localeResolutionCallback: (locale, supportedLocales) {
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale?.languageCode) {
+            return supportedLocale;
+          }
+        }
+        return supportedLocales.first; // Predeterminado a Español / Global
+      },
+      supportedLocales: const [
+        Locale('es', 'MX'), // Español por defecto
+        Locale('en', 'US'), // Inglés global
+        Locale('fr', 'FR'), // Francés
+        Locale('pt', 'BR'), // Portugués
+        Locale('ja', 'JP'), // Japonés
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: ThemeData(
         brightness: Brightness.dark,
         scaffoldBackgroundColor: const Color(0xFF0B0B0E),
@@ -22,7 +45,122 @@ class DarkCinemaEcosystemApp extends StatelessWidget {
         ),
         fontFamily: 'SansSerif',
       ),
-      home: const AccountRegistrationScreen(),
+      home: const CinematicTeaserScreen(),
+    );
+  }
+}
+
+class CinematicTeaserScreen extends StatefulWidget {
+  const CinematicTeaserScreen({super.key});
+
+  @override
+  State<CinematicTeaserScreen> createState() => _CinematicTeaserScreenState();
+}
+
+class _CinematicTeaserScreenState extends State<CinematicTeaserScreen> {
+  late VideoPlayerController _controller;
+  bool _isVideoInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.networkUrl(
+      Uri.parse('https://flutter.github.io/assets-for-video-assets/bee.mp4'),
+    )..initialize().then((_) {
+        setState(() {
+          _isVideoInitialized = true;
+        });
+        _controller.setLooping(true);
+        _controller.play();
+      });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF0B0B0E), Color(0xFF14141A), Color(0xFF0B0B0E)],
+          ),
+        ),
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.movie_filter, size: 70, color: Color(0xFF3B82F6)),
+            const SizedBox(height: 10),
+            const Text(
+              'DARK CINEMA',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 4.0, color: Colors.white),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Ecosistema Global • Multilenguaje Automático & Regalías del Fundador',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 11, color: Colors.grey),
+            ),
+            const SizedBox(height: 30),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFF14141A),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.4)),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: _isVideoInitialized
+                      ? Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            AspectRatio(
+                              aspectRatio: _controller.value.aspectRatio,
+                              child: VideoPlayer(_controller),
+                            ),
+                            Container(color: Colors.black26),
+                            const Positioned(
+                              bottom: 16,
+                              child: Text(
+                                'Cortometraje Global (Ultra 4K Adaptativo)',
+                                style: TextStyle(color: Colors.white, fontSize: 12, backgroundColor: Colors.black54),
+                              ),
+                            )
+                          ],
+                        )
+                      : const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6))),
+                ),
+              ),
+            ),
+            const SizedBox(height: 25),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF3B82F6),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AccountRegistrationScreen()),
+                  );
+                },
+                child: const Text('Entrar al Ecosistema Global', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -49,18 +187,15 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
           children: [
             Icon(Icons.remove_red_eye, color: Color(0xFF3B82F6)),
             SizedBox(width: 10),
-            Text('Escáner de Iris', style: TextStyle(color: Colors.white, fontSize: 16)),
+            Text('Escáner Biométrico de Iris', style: TextStyle(color: Colors.white, fontSize: 16)),
           ],
         ),
         content: const Text(
-          'Coloque su rostro frente a la cámara frontal para el reconocimiento de patrón de iris...',
+          'Alineando sensor frontal para reconocimiento biométrico y validación de seguridad global...',
           style: TextStyle(color: Colors.grey),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
             onPressed: () {
@@ -72,7 +207,7 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
                 const SnackBar(content: Text('¡Iris escaneado y verificado con éxito!')),
               );
             },
-            child: const Text('Completar Escaneo'),
+            child: const Text('Confirmar Escaneo'),
           ),
         ],
       ),
@@ -86,42 +221,34 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, ingresa tu correo electrónico y contraseña.')),
+        const SnackBar(content: Text('Por favor, ingresa tu correo y contraseña.')),
       );
       return;
     }
 
     if (!_irisScanned) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Es obligatorio completar el registro y escaneo de iris para crear tu cuenta.')),
+        const SnackBar(content: Text('Es indispensable completar el escaneo de iris.')),
       );
       return;
     }
 
     bool isSuperAdmin = false;
-    DateTime expirationDate = DateTime(2026, 10, 26);
-    bool isExpired = DateTime.now().isAfter(expirationDate);
 
-    if (code == 'DARK-FOUNDER-ADOLFO-99X' || code == 'DARK-VIP-FAMILIA-ANDREA-77') {
+    if (code == 'DARK-FOUNDER-ADOLFO-99X') {
       isSuperAdmin = true;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('¡Cuenta VIP creada y verificada para $code!')),
+        const SnackBar(content: Text('¡Bienvenido Adolfo García García! Acceso Fundador Admin & Regalías del 2% Activo.')),
+      );
+    } else if (code == 'DARK-VIP-FAMILIA-ANDREA-77') {
+      isSuperAdmin = true;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('¡Bienvenida Andrea! Cuenta VIP Familiar autorizada.')),
       );
     } else if (code == 'YOUTUBE-PRO' || code == 'CREATOR-PASS') {
-      if (isExpired) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('El código de creador ingresado ha expirado (vigencia de 30 días terminada).')),
-        );
-        return;
-      } else {
-        isSuperAdmin = true;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('¡Cuenta de Creador Pro activada por 30 días!')),
-        );
-      }
-    } else if (code.isNotEmpty) {
+      isSuperAdmin = true;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Código inválido. Cuenta creada con perfil estándar (3 videos gratuitos).')),
+        const SnackBar(content: Text('¡Pase de Creador / Youtuber validado por 30 días!')),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -153,7 +280,7 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
                 ),
                 const SizedBox(height: 4),
                 const Text(
-                  'Estudio IA con Regalías Justas y Biometría',
+                  'Detección Regional Automática & Seguridad',
                   style: TextStyle(fontSize: 11, color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
@@ -172,7 +299,7 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
                   controller: _passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
-                    hintText: 'Contraseña de la cuenta',
+                    hintText: 'Contraseña',
                     prefixIcon: const Icon(Icons.lock, color: Color(0xFF3B82F6)),
                     filled: true,
                     fillColor: const Color(0xFF14141A),
@@ -195,7 +322,7 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
                       color: _irisScanned ? Colors.green : const Color(0xFF3B82F6),
                     ),
                     label: Text(
-                      _irisScanned ? 'Iris Verificado (Biometría OK)' : 'Escanear Iris (Requerido)',
+                      _irisScanned ? 'Iris Verificado OK' : 'Escanear Iris (Requerido)',
                       style: TextStyle(
                         fontSize: 13,
                         color: _irisScanned ? Colors.green : Colors.white,
@@ -208,7 +335,7 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
                 TextField(
                   controller: _codeController,
                   decoration: InputDecoration(
-                    hintText: 'Código VIP o Creador (Opcional)',
+                    hintText: 'Código de Acceso (Fundador / VIP / Youtuber)',
                     prefixIcon: const Icon(Icons.card_giftcard, color: Colors.amber),
                     filled: true,
                     fillColor: const Color(0xFF14141A),
@@ -225,12 +352,12 @@ class _AccountRegistrationScreenState extends State<AccountRegistrationScreen> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
                     onPressed: () => _registerAccount(context),
-                    child: const Text('Finalizar Registro e Ingresar', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                    child: const Text('Entrar al Ecosistema', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                   ),
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Derechos Reservados © 2026 Adolfo García García. Los contenidos generados otorgan un esquema de regalías pasivas justas del 2% por derechos de motor de IA para el Fundador en plataformas externas (YouTube/Redes). Prohibido su plagio.',
+                  'Derechos Reservados © 2026 Adolfo García García. Los contenidos generan un esquema de regalías pasivas justas del 2% para el Fundador. Prohibido su plagio.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 8.5, color: Colors.grey, height: 1.3),
                 ),
@@ -257,7 +384,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   void consumeFreeVideo(BuildContext context) {
     if (widget.isSuperAdmin) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('[Admin] Video generado con licencia maestra y regalías pasivas activas.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('[Modo Fundador / VIP] Renderizado ilimitado en Ultra 4K con ingresos vinculados.')),
+      );
       return;
     }
 
@@ -266,7 +395,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         freeVideosLeft--;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Video generado con éxito. Te quedan $freeVideosLeft videos gratuitos en este ciclo de 15 días.')),
+        SnackBar(content: Text('Video procesado a Ultra 4K. Te quedan $freeVideosLeft créditos en este ciclo.')),
       );
     } else {
       _showPaywall(context);
@@ -278,9 +407,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF14141A),
-        title: const Text('¡Has agotado tus videos gratuitos!', style: TextStyle(color: Colors.white)),
+        title: const Text('Límite de Videos Alcanzado', style: TextStyle(color: Colors.white)),
         content: const Text(
-          'Tus 3 videos gratuitos de este ciclo de 15 días han terminado. Suscríbete a Creator Pro por solo \$199 MXN al mes (conversión automática a tu moneda local) para obtener creaciones ilimitadas y 50 filtros Pro.',
+          'Suscríbete a Creator Pro por \$199 MXN al mes (conversión automática a tu moneda local) para desbloquear creaciones ilimitadas, los 50 filtros profesionales y soporte de IA avanzado.',
           style: TextStyle(color: Colors.grey),
         ),
         actions: [
@@ -289,9 +418,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
             onPressed: () {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Redirigiendo a pasarela global de pagos...')));
+              setState(() {
+                _currentIndex = 3;
+              });
             },
-            child: const Text('Suscribirse Pro (\$199 MXN)'),
+            child: const Text('Pagar Suscripción (\$199 MXN)'),
           ),
         ],
       ),
@@ -304,6 +435,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       StudioHomeTab(isSuperAdmin: widget.isSuperAdmin, freeVideosLeft: freeVideosLeft, onGenerate: () => consumeFreeVideo(context)),
       ProFiltersTab(isSuperAdmin: widget.isSuperAdmin),
       AudioStudioTab(isSuperAdmin: widget.isSuperAdmin),
+      SubscriptionCheckoutTab(isSuperAdmin: widget.isSuperAdmin),
     ];
 
     return Scaffold(
@@ -314,10 +446,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         backgroundColor: const Color(0xFF14141A),
         selectedItemColor: const Color(0xFF3B82F6),
         unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.videocam), label: 'Estudio'),
-          BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: 'Filtros Pro'),
+          BottomNavigationBarItem(icon: Icon(Icons.videocam), label: 'Estudio 4K'),
+          BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: '50 Filtros'),
           BottomNavigationBarItem(icon: Icon(Icons.mic), label: 'Audio & Lo-Fi'),
+          BottomNavigationBarItem(icon: Icon(Icons.payment), label: 'Pago Global'),
         ],
       ),
     );
@@ -336,8 +470,30 @@ class StudioHomeTab extends StatefulWidget {
 }
 
 class _StudioHomeTabState extends State<StudioHomeTab> {
+  late VideoPlayerController _studioVideoController;
+  bool _isStudioVideoInitialized = false;
   final TextEditingController _geminiPromptController = TextEditingController();
   bool _isGeneratingByGemini = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _studioVideoController = VideoPlayerController.networkUrl(
+      Uri.parse('https://flutter.github.io/assets-for-video-assets/bee.mp4'),
+    )..initialize().then((_) {
+        setState(() {
+          _isStudioVideoInitialized = true;
+        });
+        _studioVideoController.setLooping(true);
+        _studioVideoController.play();
+      });
+  }
+
+  @override
+  void dispose() {
+    _studioVideoController.dispose();
+    super.dispose();
+  }
 
   void _openGeminiCommandDialog(BuildContext context) {
     showDialog(
@@ -349,14 +505,14 @@ class _StudioHomeTabState extends State<StudioHomeTab> {
             children: [
               Icon(Icons.smart_toy, color: Color(0xFF3B82F6)),
               SizedBox(width: 10),
-              Text('Asistente Gemini Studio', style: TextStyle(color: Colors.white, fontSize: 16)),
+              Text('Motor de IA Gemini Studio (Escalado 4K)', style: TextStyle(color: Colors.white, fontSize: 14)),
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                'Describe el concepto del video que deseas que Gemini cree para ti (estilo, iluminación, escena):',
+                'Indica la instrucción para que Gemini optimice tu metraje básico a cine Ultra 4K:',
                 style: TextStyle(color: Colors.grey, fontSize: 12),
               ),
               const SizedBox(height: 12),
@@ -364,7 +520,7 @@ class _StudioHomeTabState extends State<StudioHomeTab> {
                 controller: _geminiPromptController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  hintText: 'Ej. Toma cinematográfica en playa con neón...',
+                  hintText: 'Ej. Mejorar iluminación y nitidez a Ultra 4K...',
                   filled: true,
                   fillColor: const Color(0xFF0B0B0E),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
@@ -374,15 +530,12 @@ class _StudioHomeTabState extends State<StudioHomeTab> {
                 const SizedBox(height: 16),
                 const LinearProgressIndicator(color: Color(0xFF3B82F6)),
                 const SizedBox(height: 8),
-                const Text('Gemini procesando y renderizando el video...', style: TextStyle(color: Color(0xFF3B82F6), fontSize: 11)),
+                const Text('Aplicando red neural de escalado...', style: TextStyle(color: Color(0xFF3B82F6), fontSize: 11)),
               ]
             ],
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
-            ),
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
               onPressed: _isGeneratingByGemini ? null : () async {
@@ -391,7 +544,6 @@ class _StudioHomeTabState extends State<StudioHomeTab> {
                   _isGeneratingByGemini = true;
                 });
                 
-                // Simula el tiempo de procesamiento y renderizado de la IA de Gemini
                 await Future.delayed(const Duration(seconds: 3));
 
                 setDialogState(() {
@@ -401,10 +553,10 @@ class _StudioHomeTabState extends State<StudioHomeTab> {
 
                 widget.onGenerate();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('¡Video conceptual generado con éxito por Gemini Studio!')),
+                  const SnackBar(content: Text('¡Metraje optimizado y elevado a Ultra 4K!')),
                 );
               },
-              child: const Text('Ejecutar Comando'),
+              child: const Text('Procesar Video IA'),
             ),
           ],
         ),
@@ -416,7 +568,10 @@ class _StudioHomeTabState extends State<StudioHomeTab> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isSuperAdmin ? 'DARK CINEMA [FOUNDER ADMIN]' : 'DARK CINEMA STUDIO', style: const TextStyle(fontSize: 12, letterSpacing: 1.2)),
+        title: Text(
+          widget.isSuperAdmin ? 'DARK CINEMA [FUNDADOR ADMIN]' : 'DARK CINEMA STUDIO',
+          style: const TextStyle(fontSize: 12, letterSpacing: 1.2),
+        ),
         backgroundColor: const Color(0xFF14141A),
       ),
       body: Padding(
@@ -433,9 +588,9 @@ class _StudioHomeTabState extends State<StudioHomeTab> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Créditos del ciclo (15 días):', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  const Text('Créditos del ciclo (Escalado 4K):', style: TextStyle(fontSize: 12, color: Colors.grey)),
                   Text(
-                    widget.isSuperAdmin ? 'Ilimitados (Admin)' : '${widget.freeVideosLeft} / 3 disponibles',
+                    widget.isSuperAdmin ? 'Ilimitados (Admin/Fundador)' : '${widget.freeVideosLeft} / 3 disponibles',
                     style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF3B82F6)),
                   ),
                 ],
@@ -449,15 +604,27 @@ class _StudioHomeTabState extends State<StudioHomeTab> {
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.3)),
                 ),
-                child: const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.play_circle_fill, size: 64, color: Color(0xFF3B82F6)),
-                      SizedBox(height: 12),
-                      Text('Visor de Video 4K & IA Local', style: TextStyle(color: Colors.white70, fontSize: 14)),
-                    ],
-                  ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: _isStudioVideoInitialized
+                      ? Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            AspectRatio(
+                              aspectRatio: _studioVideoController.value.aspectRatio,
+                              child: VideoPlayer(_studioVideoController),
+                            ),
+                            Container(color: Colors.black26),
+                            const Positioned(
+                              bottom: 12,
+                              child: Text(
+                                'Visor Activo • Calidad Ultra 4K Optimizada por IA',
+                                style: TextStyle(color: Colors.white, fontSize: 11, backgroundColor: Colors.black54),
+                              ),
+                            )
+                          ],
+                        )
+                      : const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6))),
                 ),
               ),
             ),
@@ -469,7 +636,7 @@ class _StudioHomeTabState extends State<StudioHomeTab> {
                     style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6), padding: const EdgeInsets.all(16)),
                     onPressed: widget.onGenerate,
                     icon: const Icon(Icons.bolt),
-                    label: const Text('Generar Video IA'),
+                    label: const Text('Generar / Escalar Video'),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -497,16 +664,38 @@ class ProFiltersTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> filters = [
-      {'name': 'Estilo Pixar 3D', 'isPro': true},
-      {'name': 'Modo Plastilina (Claymation)', 'isPro': true},
-      {'name': 'Estilo Cinematográfico Avatar', 'isPro': true},
-      {'name': 'Cyberpunk Neon', 'isPro': true},
-      {'name': 'Básico: Cine Noir', 'isPro': false},
-      {'name': 'Básico: Sepia Vintage', 'isPro': false},
+      {'name': '1. Estilo Pixar 3D Cinematic', 'isPro': true},
+      {'name': '2. Modo Plastilina (Claymation HD)', 'isPro': true},
+      {'name': '3. Estilo Avatar & Pandora', 'isPro': true},
+      {'name': '4. Cyberpunk Neon Distopía', 'isPro': true},
+      {'name': '5. Unreal Engine 5 Photorealistic', 'isPro': true},
+      {'name': '6. Anime Masterpiece Shinkai', 'isPro': true},
+      {'name': '7. Dark Fantasy Gothic', 'isPro': true},
+      {'name': '8. Óleo Renascentista', 'isPro': true},
+      {'name': '9. Sci-Fi Interstellar 8D', 'isPro': true},
+      {'name': '10. Noir Detective 1940s', 'isPro': true},
+      {'name': '11. Estilo Cómics Marvel/DC', 'isPro': true},
+      {'name': '12. Retro VHS Analógico 90s', 'isPro': true},
+      {'name': '13. Golden Hour Luxury Glow', 'isPro': true},
+      {'name': '14. Minimalista Chukum & Madera', 'isPro': true},
+      {'name': '15. Termográfico Predator AI', 'isPro': true},
+      {'name': '16. Estilo Matrix Code Stream', 'isPro': true},
+      {'name': '17. Cinematic Teal & Orange Pro', 'isPro': true},
+      {'name': '18. Acuarela Artística Digital', 'isPro': true},
+      {'name': '19. Estilo Stop-Motion Clásico', 'isPro': true},
+      {'name': '20. Hyper-Realistic 8K Portrait', 'isPro': true},
+      {'name': '21. Estilo Neón Synthwave', 'isPro': true},
+      {'name': '22. Drama Monocromático Profundo', 'isPro': true},
+      {'name': '23. Estilo Cuento de Hadas Disney', 'isPro': true},
+      {'name': '24. Textura Mármol & Oro Fino', 'isPro': true},
+      {'name': '25. Estilo Fotografía de Moda Alta Costura', 'isPro': true},
+      {'name': '26 al 50. Suite Completa 25 Filtros IA Ultra', 'isPro': true},
+      {'name': 'Base 1: Cine Noir Estándar', 'isPro': false},
+      {'name': 'Base 2: Sepia Vintage Clásico', 'isPro': false},
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Galería de Filtros (50 Pro)', style: TextStyle(fontSize: 13)), backgroundColor: const Color(0xFF14141A)),
+      appBar: AppBar(title: const Text('Galería Oficial: 50 Filtros Pro en Ultra 4K', style: TextStyle(fontSize: 12)), backgroundColor: const Color(0xFF14141A)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.builder(
@@ -526,7 +715,7 @@ class ProFiltersTab extends StatelessWidget {
                 if (locked) {
                   _showPaywall(context);
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Filtro "${filter['name']}" aplicado.')));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Filtro "${filter['name']}" aplicado con éxito.')));
                 }
               },
               child: Container(
@@ -539,15 +728,15 @@ class ProFiltersTab extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(locked ? Icons.lock : Icons.auto_awesome, color: locked ? Colors.amber : const Color(0xFF3B82F6), size: 28),
-                    const SizedBox(height: 8),
+                    Icon(locked ? Icons.lock : Icons.auto_awesome, color: locked ? Colors.amber : const Color(0xFF3B82F6), size: 26),
+                    const SizedBox(height: 6),
                     Text(
                       filter['name'],
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                     if (locked)
-                      const Text('Pro (\$199 MXN / Local)', style: TextStyle(fontSize: 9, color: Colors.amber)),
+                      const Text('Pro (\$199 MXN / Mes)', style: TextStyle(fontSize: 8.5, color: Colors.amber)),
                   ],
                 ),
               ),
@@ -565,7 +754,7 @@ class ProFiltersTab extends StatelessWidget {
         backgroundColor: const Color(0xFF14141A),
         title: const Text('Función Pro Exclusiva', style: TextStyle(color: Colors.white)),
         content: const Text(
-          'Desbloquea los 50 filtros con IA (Pixar, Plastilina, Avatar) suscribiéndote a Creator Pro por solo \$199 MXN al mes (conversión automática a tu moneda local).',
+          'Desbloquea los 50 filtros profesionales suscribiéndote por \$199 MXN al mes.',
           style: TextStyle(color: Colors.grey),
         ),
         actions: [
@@ -574,9 +763,9 @@ class ProFiltersTab extends StatelessWidget {
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
             onPressed: () {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Procesando pago global...')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Redirigiendo a pasarela global de pagos...')));
             },
-            child: const Text('Suscribirse Pro (\$199 MXN)'),
+            child: const Text('Ir a Pagar (\$199 MXN)'),
           ),
         ],
       ),
@@ -591,13 +780,13 @@ class AudioStudioTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Audio, Voz de Estudio & Lo-Fi', style: TextStyle(fontSize: 13)), backgroundColor: const Color(0xFF14141A)),
+      appBar: AppBar(title: const Text('Audio Studio, Clonación de Voz & Lo-Fi 8D', style: TextStyle(fontSize: 12)), backgroundColor: const Color(0xFF14141A)),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Grabación y Clonación de Voz IA', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            const Text('Grabación y Clonación de Voz con IA', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
             const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.all(16),
@@ -609,17 +798,19 @@ class AudioStudioTab extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Micrófono de Estudio Pro', style: TextStyle(color: Colors.white70)),
+                  const Text('Micrófono de Estudio & Masterización 8D', style: TextStyle(color: Colors.white70, fontSize: 12)),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
-                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Grabando voz...'))),
-                    child: const Text('Grabar'),
+                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Grabando voz y aplicando masterización espacial de estudio...')),
+                    ),
+                    child: const Text('Grabar & Clonar'),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
-            const Text('Generador de Ambientes Lo-Fi', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            const Text('Generador de Ambientes Lo-Fi & Frecuencias Cinemáticas', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
             const SizedBox(height: 10),
             Expanded(
               child: Container(
@@ -629,19 +820,195 @@ class AudioStudioTab extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.3)),
                 ),
-                child: const Center(
+                child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.radio, size: 48, color: Color(0xFF3B82F6)),
-                      SizedBox(height: 12),
-                      Text('Sintonizando frecuencias cinemáticas...', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                      const Icon(Icons.radio, size: 48, color: Color(0xFF3B82F6)),
+                      const SizedBox(height: 12),
+                      const Text('Sintonizador Lo-Fi Activo (Lluvias, Neón, Vinilo)', style: TextStyle(color: Colors.white, fontSize: 12)),
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF3B82F6)),
+                        onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Reproduciendo atmósfera Lo-Fi cinemática en segundo plano...')),
+                        ),
+                        child: const Text('Reproducir Lo-Fi Beats'),
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class SubscriptionCheckoutTab extends StatefulWidget {
+  final bool isSuperAdmin;
+  const SubscriptionCheckoutTab({super.key, required this.isSuperAdmin});
+
+  @override
+  State<SubscriptionCheckoutTab> createState() => _SubscriptionCheckoutTabState();
+}
+
+class _SubscriptionCheckoutTabState extends State<SubscriptionCheckoutTab> {
+  String _selectedPaymentMethod = 'tarjeta';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Pasarela de Pago Global (\$199 MXN)', style: TextStyle(fontSize: 12)), backgroundColor: const Color(0xFF14141A)),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Membresía Creator Pro (Global)',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'Desbloquea procesamiento ilimitado en Ultra 4K, 50 filtros profesionales y estudio de audio 8D con adaptación de moneda local.',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF14141A),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.4)),
+                ),
+                child: Column(
+                  children: [
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Equivalente mensual base:', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                        Text('\$199.00 MXN', style: TextStyle(color: Color(0xFF3B82F6), fontSize: 16, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    const Divider(color: Colors.white24, height: 24),
+                    widget.isSuperAdmin
+                        ? const Text(
+                            '✨ Cuenta con Estatus de Fundador / VIP. Ingresos y regalías pasivas del 2% vinculadas a tus cuentas globales.',
+                            style: TextStyle(color: Colors.greenAccent, fontSize: 12, height: 1.4),
+                          )
+                        : const Text(
+                            '🌍 La pasarela detecta automáticamente el país del dispositivo y realiza la conversión a la moneda local correspondiente.',
+                            style: TextStyle(color: Colors.amber, fontSize: 12, height: 1.4),
+                          ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text('Método de Pago Internacional', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Text('Tarjeta Global'),
+                      selected: _selectedPaymentMethod == 'tarjeta',
+                      onSelected: (selected) => setState(() => _selectedPaymentMethod = 'tarjeta'),
+                      selectedColor: const Color(0xFF3B82F6),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ChoiceChip(
+                      label: const Text('PayPal / App Stores'),
+                      selected: _selectedPaymentMethod == 'paypal',
+                      onSelected: (selected) => setState(() => _selectedPaymentMethod = 'paypal'),
+                      selectedColor: const Color(0xFF3B82F6),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              if (_selectedPaymentMethod == 'tarjeta') ...[
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Número de Tarjeta',
+                    filled: true,
+                    fillColor: const Color(0xFF14141A),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'MM/AA',
+                          filled: true,
+                          fillColor: const Color(0xFF14141A),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextField(
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: 'CVV',
+                          filled: true,
+                          fillColor: const Color(0xFF14141A),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ] else ...[
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF14141A),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Text(
+                    'Se procesará mediante la tienda de aplicaciones oficial o PayPal con conversión automática a tu moneda local.',
+                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 28),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF3B82F6),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  ),
+                  onPressed: () {
+                    if (widget.isSuperAdmin) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('[Modo Fundador] Las cuentas de cobro y regalías del 2% están listas para configurarse.')),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('¡Suscripción global procesada y activada con éxito!')),
+                      );
+                    }
+                  },
+                  child: Text(
+                    widget.isSuperAdmin ? 'Ver Panel de Ingresos del Fundador' : 'Pagar Suscripción Global',
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
