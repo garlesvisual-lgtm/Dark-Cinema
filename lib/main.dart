@@ -694,7 +694,7 @@ class AudioMusicStudioScreen extends StatelessWidget {
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics,
+                physics: const NeverScrollableScrollPhysics(),
                 childAspectRatio: 1.6,
                 children: [
                   _buildLofiCard(context, 'Lluvia Nocturna Lo-Fi', Icons.cloud_queue, 'Ambiente relajante con vinilo'),
